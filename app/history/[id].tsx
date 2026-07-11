@@ -8,6 +8,7 @@ import { BillService } from "../../services/billService";
 import { SettingsService } from "../../services/settingsService";
 import Receipt from "../../components/receipt/Receipt";
 
+
 export default function BillDetails() {
 
   const { id } = useLocalSearchParams();

@@ -91,27 +91,34 @@ export const ReportService = {
       bills.createdAt,
       bills.paymentMode,
       bills.billType,
-      products.name,
-      bill_items.qty,
-      bill_items.price,
-      (bill_items.qty * bill_items.price) as amount
+      bills.total,
+
+      COALESCE(products.name,'-') as name,
+      COALESCE(bill_items.qty,'-') as qty,
+      COALESCE(bill_items.price,'-') as price,
+
+      CASE
+        WHEN bill_items.qty IS NULL
+        THEN bills.total
+        ELSE bill_items.qty * bill_items.price
+      END as amount
 
     FROM bills
 
-    INNER JOIN bill_items
+    LEFT JOIN bill_items
       ON bills.id = bill_items.billId
 
-    INNER JOIN products
+    LEFT JOIN products
       ON products.id = bill_items.productId
 
     WHERE date(bills.createdAt)
-      BETWEEN date(?) AND date(?)
+    BETWEEN date(?) AND date(?)
 
     ORDER BY bills.createdAt DESC
     `,
     [from, to]
   );
 
-},
+}
 
 };

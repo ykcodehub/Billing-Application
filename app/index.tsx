@@ -1,288 +1,397 @@
-// // import { View, Pressable, Text, StyleSheet } from "react-native";
-// // import { router } from "expo-router";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-// // const menus = [
-// //   { title: "🧾 Normal Billing", path: "/billing" },
-// //   { title: "⚡ Quick Billing", path: "/billing/quick" },
-// //   { title: "📦 Products", path: "/products" },
-// //   { title: "📜 History", path: "/history" },
-// //   { title: "📊 Reports", path: "/reports" },
-// //   { title: "⚙️ Settings", path: "/settings" },
-// // ];
-
-// // export default function Home() {
-// //   return (
-// //     <View style={styles.container}>
-// //       <Text style={styles.heading}>Billing App</Text>
-
-// //       {menus.map((item) => (
-// //         <Pressable
-// //           key={item.title}
-// //           style={styles.card}
-// //           onPress={() => router.push(item.path as any)}
-// //         >
-// //           <Text style={styles.text}>{item.title}</Text>
-// //         </Pressable>
-// //       ))}
-// //     </View>
-// //   );
-// // }
-
-// // const styles = StyleSheet.create({
-// //   container: {
-// //     flex: 1,
-// //     padding: 20,
-// //     backgroundColor: "#f5f5f5",
-// //   },
-
-// //   heading: {
-// //     fontSize: 28,
-// //     fontWeight: "700",
-// //     marginBottom: 25,
-// //   },
-
-// //   card: {
-// //     backgroundColor: "#fff",
-// //     padding: 18,
-// //     borderRadius: 12,
-// //     marginBottom: 15,
-// //     elevation: 2,
-// //   },
-
-// //   text: {
-// //     fontSize: 18,
-// //     fontWeight: "600",
-// //   },
-// // });
-
-
-// import { View, Text, StyleSheet } from "react-native";
-// import { router } from "expo-router";
-
-// import MenuCard from "../components/common/MenuCard";
-
-// export default function Home() {
-
-//   return (
-
-//     <View style={styles.container}>
-
-//       <Text style={styles.title}>
-//         Billing App
-//       </Text>
-
-//       <MenuCard
-//         title="🧾 Normal Billing"
-//         onPress={()=>router.push("/billing")}
-//       />
-
-//       <MenuCard
-//         title="⚡ Quick Billing"
-//         onPress={()=>router.push("/billing/quick")}
-//       />
-
-//       <MenuCard
-//         title="📦 Products"
-//         onPress={()=>router.push("/products")}
-//       />
-
-//       <MenuCard
-//         title="📜 History"
-//         onPress={()=>router.push("/history")}
-//       />
-
-//       <MenuCard
-//         title="📊 Reports"
-//         onPress={()=>router.push("/reports")}
-//       />
-
-//       <MenuCard
-//         title="⚙️ Settings"
-//         onPress={()=>router.push("/settings")}
-//       />
-
-//     </View>
-
-//   );
-
-// }
-
-// const styles=StyleSheet.create({
-
-// container:{
-// flex:1,
-// padding:20,
-// backgroundColor:"#f5f5f5"
-// },
-
-// title:{
-// fontSize:28,
-// fontWeight:"700",
-// marginBottom:25
-// }
-
-// });
-
-
-import { useCallback, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
+  Animated,
   ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
+
 import { router, useFocusEffect } from "expo-router";
 
 import MenuCard from "../components/common/MenuCard";
+
 import { BillService } from "../services/billService";
-import { ProductService } from "../services/productService";
+import { SettingsService } from "../services/settingsService";
+
 
 export default function Home() {
 
+  const store = SettingsService.get() as {
+    storeName: string;
+    address: string;
+    phone: string;
+  };
+
   const [sales, setSales] = useState(0);
+
   const [bills, setBills] = useState(0);
-  const [products, setProducts] = useState(0);
+
   const [recentBills, setRecentBills] = useState<any[]>([]);
 
-  function loadDashboard() {
 
-    setSales(BillService.getTodaySales());
 
-    setBills(BillService.getTodayBillsCount());
+  const fade = useRef(
+    new Animated.Value(0)
+  ).current;
 
-    setProducts(ProductService.count());
+  const slide = useRef(
+    new Animated.Value(-20)
+  ).current;
+
+
+
+  useEffect(() => {
+
+    Animated.parallel([
+
+      Animated.timing(fade,{
+
+        toValue:1,
+
+        duration:700,
+
+        useNativeDriver:true
+
+      }),
+
+      Animated.timing(slide,{
+
+        toValue:0,
+
+        duration:700,
+
+        useNativeDriver:true
+
+      })
+
+    ]).start();
+
+  },[]);
+
+
+
+
+  function loadDashboard(){
+
+    setSales(
+      BillService.getTodaySales()
+    );
+
+    setBills(
+      BillService.getTodayBillsCount()
+    );
 
     setRecentBills(
-      BillService.getRecentBills() as any[]
+      BillService.getRecentBills(3) as any[]
     );
 
   }
 
+
+
   useFocusEffect(
 
-    useCallback(() => {
+    useCallback(()=>{
 
       loadDashboard();
 
-    }, [])
+    },[])
 
   );
 
-  return (
 
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
 
-      <Text style={styles.title}>
-        Billing App
-      </Text>
+  const today=new Date();
 
-      <View style={styles.statsRow}>
+  const hour=today.getHours();
 
-        <View style={styles.statCard}>
+  const greeting=
 
-          <Text style={styles.label}>
-            Today Sales
-          </Text>
+  hour<12
 
-          <Text style={styles.value}>
-            ₹ {sales}
-          </Text>
+  ? "Good Morning ☀️"
 
-        </View>
+  : hour<17
 
-        <View style={styles.statCard}>
+  ? "Good Afternoon 🌤️"
 
-          <Text style={styles.label}>
-            Bills
-          </Text>
+  : "Good Evening 🌙";
 
-          <Text style={styles.value}>
-            {bills}
-          </Text>
 
-        </View>
 
-      </View>
+  const date=today.toLocaleDateString(
 
-      <View style={styles.statsRow}>
+    "en-IN",
 
-        <View style={styles.statCard}>
+    {
 
-          <Text style={styles.label}>
-            Products
-          </Text>
+      day:"numeric",
 
-          <Text style={styles.value}>
-            {products}
-          </Text>
+      month:"short",
 
-        </View>
+      year:"numeric"
 
-      </View>
-
-      <MenuCard
-        title="🧾 Normal Billing"
-        onPress={() => router.push("/billing")}
-      />
-
-      <MenuCard
-        title="⚡ Quick Billing"
-        onPress={() => router.push("/billing/quick")}
-      />
-
-      <MenuCard
-        title="📦 Products"
-        onPress={() => router.push("/products")}
-      />
-
-      <MenuCard
-        title="📜 History"
-        onPress={() => router.push("/history")}
-      />
-
-      <MenuCard
-        title="📊 Reports"
-        onPress={() => router.push("/reports")}
-      />
-
-      <MenuCard
-        title="⚙️ Settings"
-        onPress={() => router.push("/settings")}
-      />
-
-      <Text style={styles.recent}>
-        Recent Bills
-      </Text>
-
-      {
-
-        recentBills.map((bill: any) => (
-
-          <View
-            key={bill.id}
-            style={styles.billCard}
-          >
-
-            <Text style={styles.billNo}>
-              {bill.billNo}
-            </Text>
-
-            <Text>
-              ₹ {bill.total}
-            </Text>
-
-          </View>
-
-        ))
-
-      }
-
-    </ScrollView>
+    }
 
   );
+
+
+
+  return(
+
+<ScrollView
+
+style={styles.container}
+
+showsVerticalScrollIndicator={false}
+
+>
+
+
+
+<View style={styles.header}>
+
+
+
+<Animated.View
+
+style={{
+
+opacity:fade,
+
+transform:[
+
+{translateY:slide}
+
+]
+
+}}
+
+>
+
+<Text style={styles.hello}>
+
+Hello,
+
+</Text>
+
+
+
+<Text style={styles.store}>
+
+{store.storeName || "Billing Store"}
+
+</Text>
+
+
+
+<Text style={styles.greeting}>
+
+{greeting}
+
+</Text>
+
+</Animated.View>
+
+
+
+<Text style={styles.date}>
+
+{date}
+
+</Text>
+
+
+
+</View>
+
+
+
+
+
+<View style={styles.earningCard}>
+
+<Text style={styles.earningTitle}>
+
+Today Earnings
+
+</Text>
+
+
+
+<Text style={styles.earning}>
+
+₹ {sales.toFixed(2)}
+
+</Text>
+
+</View>
+
+
+
+
+
+<View style={styles.row}>
+
+
+<View style={styles.smallCard}>
+
+<Text style={styles.smallTitle}>
+
+Today Bills
+
+</Text>
+
+<Text style={styles.bigNumber}>
+
+{bills}
+
+</Text>
+
+</View>
+
+
+
+
+<View style={styles.smallCard}>
+
+<Text style={styles.smallTitle}>
+
+Recent Bills
+
+</Text>
+
+{
+
+recentBills.length===0
+
+?
+
+<Text>
+
+No Bills
+
+</Text>
+
+:
+
+recentBills.map((item:any)=>(
+
+<Text
+
+key={item.id}
+
+style={styles.billNo}
+
+>
+
+{item.billNo}
+
+</Text>
+
+))
+
+}
+
+</View>
+
+</View>
+
+
+
+
+<Text style={styles.section}>
+
+Quick Actions
+
+</Text>
+
+ <MenuCard
+  title="🧾 Normal Billing"
+  onPress={() => router.push("/billing")}
+/>
+
+<MenuCard
+  title="⚡ Quick Billing"
+  onPress={() => router.push("/billing/quick")}
+/>
+
+<MenuCard
+  title="📦 Products"
+  onPress={() => router.push("/products")}
+/>
+
+<MenuCard
+  title="📜 History"
+  onPress={() => router.push("/history")}
+/>
+
+<MenuCard
+  title="📊 Reports"
+  onPress={() => router.push("/reports")}
+/>
+
+<MenuCard
+  title="⚙️ Settings"
+  onPress={() => router.push("/settings")}
+/>
+
+<Text style={styles.section}>
+Recent Bills
+</Text>
+
+{
+recentBills.length===0
+?
+<View style={styles.emptyCard}>
+
+<Text style={styles.emptyText}>
+No Bills Available
+</Text>
+
+</View>
+
+:
+recentBills.map((bill:any)=>(
+
+<View
+key={bill.id}
+style={styles.billCard}
+>
+
+<View>
+
+<Text style={styles.billNumber}>
+{bill.billNo}
+</Text>
+
+<Text style={styles.billMode}>
+{bill.paymentMode}
+</Text>
+
+</View>
+
+<Text style={styles.billAmount}>
+₹ {Number(bill.total).toFixed(2)}
+</Text>
+
+</View>
+
+))
+}
+
+<View style={{height:25}}/>
+
+</ScrollView>
+
+);
 
 }
 
@@ -290,58 +399,142 @@ const styles = StyleSheet.create({
 
 container:{
 flex:1,
-backgroundColor:"#f5f5f5",
-padding:20
+backgroundColor:"#F4F6F9",
+padding:18
 },
 
-title:{
-fontSize:28,
-fontWeight:"700",
-marginBottom:20
-},
-
-statsRow:{
+header:{
 flexDirection:"row",
-marginBottom:15
+justifyContent:"space-between",
+alignItems:"flex-start",
+marginBottom:22
 },
 
-statCard:{
-flex:1,
-backgroundColor:"#fff",
-padding:18,
-borderRadius:12,
-marginRight:10,
-elevation:2
-},
-
-label:{
-fontSize:14,
+hello:{
+fontSize:17,
 color:"#666"
 },
 
-value:{
-fontSize:24,
-fontWeight:"700",
+store:{
+fontSize:30,
+fontWeight:"800",
+color:"#111",
+marginTop:2
+},
+
+greeting:{
+fontSize:16,
+color:"#666",
+marginTop:6
+},
+
+date:{
+fontSize:15,
+fontWeight:"600",
+color:"#777"
+},
+
+earningCard:{
+backgroundColor:"#111827",
+padding:22,
+borderRadius:18,
+marginBottom:18,
+elevation:4
+},
+
+earningTitle:{
+fontSize:16,
+color:"#E5E7EB"
+},
+
+earning:{
+fontSize:34,
+fontWeight:"800",
+color:"#fff",
 marginTop:8
 },
 
-recent:{
-fontSize:22,
+row:{
+flexDirection:"row",
+justifyContent:"space-between",
+marginBottom:20
+},
+
+smallCard:{
+backgroundColor:"#fff",
+width:"48%",
+padding:18,
+borderRadius:16,
+elevation:2
+},
+
+smallTitle:{
+fontSize:15,
 fontWeight:"700",
-marginTop:20,
-marginBottom:12
+color:"#555",
+marginBottom:10
+},
+
+bigNumber:{
+fontSize:34,
+fontWeight:"800",
+color:"#111"
+},
+
+billNo:{
+fontSize:15,
+fontWeight:"600",
+marginBottom:4
+},
+
+section:{
+fontSize:22,
+fontWeight:"800",
+marginTop:8,
+marginBottom:12,
+color:"#111"
 },
 
 billCard:{
 backgroundColor:"#fff",
-padding:15,
-borderRadius:12,
-marginBottom:10
+padding:16,
+borderRadius:16,
+marginBottom:12,
+flexDirection:"row",
+justifyContent:"space-between",
+alignItems:"center",
+elevation:2
 },
 
-billNo:{
+billNumber:{
+fontSize:17,
 fontWeight:"700",
-fontSize:16
+color:"#111"
+},
+
+billMode:{
+marginTop:4,
+fontSize:14,
+color:"#777"
+},
+
+billAmount:{
+fontSize:18,
+fontWeight:"800",
+color:"#16A34A"
+},
+
+emptyCard:{
+backgroundColor:"#fff",
+padding:22,
+borderRadius:16,
+alignItems:"center",
+elevation:2
+},
+
+emptyText:{
+fontSize:16,
+color:"#777"
 }
 
 });

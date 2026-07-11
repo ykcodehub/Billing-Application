@@ -4,9 +4,12 @@ import {
   Text,
   View,
   Pressable,
+  Alert,
 } from "react-native";
 
 import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -44,63 +47,61 @@ export default function Reports() {
 
 
 
-  async function exportCsv(){
+  async function exportCsv() {
 
-    const rows = ReportService.reportByDate(
-      formatDate(fromDate),
-      formatDate(toDate)
+  const rows = ReportService.reportByDate(
+    formatDate(fromDate),
+    formatDate(toDate)
+  ) as any[];
+
+  if (rows.length === 0) {
+
+    Alert.alert(
+      "No Reports",
+      "No reports found for selected dates."
     );
 
-
-    await CsvService.exportSales(
-      rows as any[]
-    );
+    return;
 
   }
 
+  await CsvService.exportSales(rows);
 
+}
 
-  useEffect(()=>{
-
+  useFocusEffect(
+  useCallback(() => {
 
     setToday(
       ReportService.today()
     );
 
-
     setWeek(
       ReportService.weekly()
     );
-
 
     setMonth(
       ReportService.monthly()
     );
 
-
     setYear(
       ReportService.yearly()
     );
-
 
     setTotal(
       ReportService.totalSales()
     );
 
-
     setPayments(
       ReportService.paymentSummary() as any[]
     );
-
 
     setTopProducts(
       ReportService.topProducts() as any[]
     );
 
-
-  },[]);
-
-
+  }, [])
+);
 
   return (
 

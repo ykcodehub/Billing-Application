@@ -32,15 +32,16 @@ export function initializeDatabase() {
       price REAL
     );
 
-    CREATE TABLE IF NOT EXISTS settings (
-      id INTEGER PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS settings(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       storeName TEXT,
       address TEXT,
       phone TEXT,
+      logo TEXT,
       printerName TEXT,
-      printerMac TEXT
+      printerMac TEXT,
+      autoPrint INTEGER DEFAULT 1
     );
   `);
 
-  // console.log("SQLite Ready");
 }

@@ -1,126 +1,151 @@
 import { View, Text, StyleSheet } from "react-native";
 
 export default function Receipt({
+
   store,
+
   bill,
-  items,
-}: any) {
-  return (
-    <View style={styles.container}>
 
-      <Text style={styles.store}>
-        {store?.storeName || "STORE"}
-      </Text>
+  items
 
-      <Text>
-        {store?.address}
-      </Text>
+}:any){
 
-      <Text>
-        {store?.phone}
-      </Text>
+return(
 
-      <Text style={styles.line}>
-        ------------------------------
-      </Text>
+<View style={styles.paper}>
 
-      <Text>
-        Bill : {bill.billNo}
-      </Text>
+<Text style={styles.store}>
+{store?.storeName || "Billing Store"}
+</Text>
 
-      <Text>
-        {new Date(bill.createdAt).toLocaleString()}
-      </Text>
-
-      <Text style={styles.line}>
-        ------------------------------
-      </Text>
-
-      {items.map((item: any) => (
-
-        <View
-          key={item.id}
-          style={styles.row}
-        >
-
-          <Text style={{ flex: 1 }}>
-            {item.name}
-          </Text>
-
-          <Text>
-            {item.qty} x {item.price}
-          </Text>
-
-        </View>
-
-      ))}
-
-      <Text style={styles.line}>
-        ------------------------------
-      </Text>
-
-      <View style={styles.totalRow}>
-
-        <Text style={styles.total}>
-          TOTAL
-        </Text>
-
-        <Text style={styles.total}>
-          ₹ {bill.total}
-        </Text>
-
-      </View>
-
-      <Text style={styles.footer}>
-        Thank You
-      </Text>
-
-      <Text style={styles.footer}>
-        Visit Again
-      </Text>
-
-    </View>
-  );
+{
+store?.address?
+<Text style={styles.small}>
+{store.address}
+</Text>:null
 }
 
-const styles = StyleSheet.create({
+{
+store?.phone?
+<Text style={styles.small}>
+{store.phone}
+</Text>:null
+}
 
-container:{
+<View style={styles.line}/>
+
+<Text style={styles.small}>
+Bill : {bill.billNo}
+</Text>
+
+<Text style={styles.small}>
+{new Date(bill.createdAt).toLocaleString()}
+</Text>
+
+<View style={styles.line}/>
+
+{
+
+items.map((item:any)=>(
+
+<View
+key={item.id}
+style={styles.row}
+>
+
+<Text style={{flex:1}}>
+{item.name}
+</Text>
+
+<Text>
+{item.qty}
+</Text>
+
+<Text>
+₹ {item.qty*item.price}
+</Text>
+
+</View>
+
+))
+
+}
+
+<View style={styles.line}/>
+
+<View style={styles.row}>
+
+<Text style={styles.total}>
+TOTAL
+</Text>
+
+<Text style={styles.total}>
+₹ {bill.total}
+</Text>
+
+</View>
+
+<Text style={styles.small}>
+Payment : {bill.paymentMode}
+</Text>
+
+<View style={styles.line}/>
+
+<Text style={styles.footer}>
+THANK YOU
+</Text>
+
+<Text style={styles.footer}>
+Visit Again
+</Text>
+
+</View>
+
+);
+
+}
+
+const styles=StyleSheet.create({
+
+paper:{
 backgroundColor:"#fff",
-padding:15
+padding:12,
+borderRadius:10
 },
 
 store:{
-fontSize:22,
+fontSize:18,
 fontWeight:"700",
 textAlign:"center"
 },
 
+small:{
+fontSize:12,
+textAlign:"center",
+marginTop:2
+},
+
 line:{
-marginVertical:10,
-textAlign:"center"
+borderBottomWidth:1,
+borderStyle:"dashed",
+marginVertical:8
 },
 
 row:{
 flexDirection:"row",
 justifyContent:"space-between",
-marginBottom:6
-},
-
-totalRow:{
-flexDirection:"row",
-justifyContent:"space-between",
-marginTop:12
+marginBottom:4
 },
 
 total:{
-fontWeight:"700",
-fontSize:18
+fontSize:16,
+fontWeight:"700"
 },
 
 footer:{
-marginTop:10,
-textAlign:"center"
+textAlign:"center",
+marginTop:3,
+fontWeight:"600"
 }
 
 });

@@ -5,64 +5,92 @@ export const SettingsService = {
   get() {
 
     return db.getFirstSync(
-      "SELECT * FROM settings LIMIT 1"
+      `SELECT * FROM settings LIMIT 1`
     );
 
   },
 
   save(data: any) {
 
-    const exists = db.getFirstSync(
-      "SELECT id FROM settings LIMIT 1"
-    );
+    const exists = this.get();
 
     if (exists) {
 
       db.runSync(
-        `
-        UPDATE settings
+
+        `UPDATE settings
         SET
         storeName=?,
         address=?,
         phone=?,
+        logo=?,
         printerName=?,
-        printerMac=?
-        `,
+        printerMac=?,
+        autoPrint=?`,
+
         [
           data.storeName,
           data.address,
           data.phone,
+          data.logo,
           data.printerName,
-          data.printerMac
+          data.printerMac,
+          data.autoPrint,
         ]
+
       );
 
     } else {
 
       db.runSync(
-        `
-        INSERT INTO settings
+
+        `INSERT INTO settings
         (
-          id,
           storeName,
           address,
           phone,
+          logo,
           printerName,
-          printerMac
+          printerMac,
+          autoPrint
         )
-        VALUES(1,?,?,?,?,?)
-        `,
+        VALUES(?,?,?,?,?,?,?)`,
+
         [
           data.storeName,
           data.address,
           data.phone,
+          data.logo,
           data.printerName,
-          data.printerMac
+          data.printerMac,
+          data.autoPrint,
         ]
+
       );
 
     }
 
-  }
+  },
+
+  updatePrinter(
+    name: string,
+    mac: string
+  ) {
+
+    db.runSync(
+
+      `UPDATE settings
+      SET
+      printerName=?,
+      printerMac=?`,
+
+      [
+        name,
+        mac,
+      ]
+
+    );
+
+  },
 
 };
