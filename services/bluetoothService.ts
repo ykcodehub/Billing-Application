@@ -1,37 +1,115 @@
+import RNBluetoothClassic, {
+  BluetoothDevice,
+} from "react-native-bluetooth-classic";
+
 export interface PrinterDevice {
-
   name: string;
-
   address: string;
-
 }
 
 export const BluetoothService = {
 
+  async enableBluetooth() {
+
+    const enabled =
+      await RNBluetoothClassic.requestBluetoothEnabled();
+
+    return enabled;
+
+  },
+
   async scan(): Promise<PrinterDevice[]> {
 
-    // Bluetooth library add hone ke baad
-    // yahan nearby printers scan honge.
+    await this.enableBluetooth();
 
-    return [];
+    const devices =
+      await RNBluetoothClassic.startDiscovery();
+
+    return devices.map((item: BluetoothDevice) => ({
+      name: item.name || "Unknown Printer",
+      address: item.address,
+    }));
 
   },
 
-  async connect(
-    address: string
+  async paired(): Promise<PrinterDevice[]> {
+
+    const devices =
+      await RNBluetoothClassic.getBondedDevices();
+
+    return devices.map((item: BluetoothDevice) => ({
+      name: item.name || "Unknown Printer",
+      address: item.address,
+    }));
+
+  },
+
+  async connect(address: string) {
+
+    const bonded =
+      await RNBluetoothClassic.getBondedDevices();
+
+    const printer =
+      bonded.find(
+        d => d.address === address
+      );
+
+    if (!printer)
+      throw new Error("Printer not found");
+
+    const connected =
+      await printer.connect();
+
+    return connected;
+
+  },
+
+  async disconnect(address: string) {
+
+    const connected =
+      await RNBluetoothClassic.getConnectedDevices();
+
+    const printer =
+      connected.find(
+        d => d.address === address
+      );
+
+    if (printer)
+      await printer.disconnect();
+
+  },
+
+  async print(
+    address: string,
+    text: string
   ) {
 
-    console.log("Connecting:", address);
+    const connected =
+      await RNBluetoothClassic.getConnectedDevices();
 
-    return true;
+    let printer =
+      connected.find(
+        d => d.address === address
+      );
 
-  },
+    if (!printer) {
 
-  async disconnect() {
+      const bonded =
+        await RNBluetoothClassic.getBondedDevices();
 
-    console.log("Disconnected");
+      printer =
+        bonded.find(
+          d => d.address === address
+        );
 
-    return true;
+      if (!printer)
+        throw new Error("Printer not found");
+
+      await printer.connect();
+
+    }
+
+    await printer.write(text);
 
   },
 

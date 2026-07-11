@@ -11,13 +11,20 @@
       "@react-native-community/datetimepicker"
     ],
     "android": {
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.billingapp"
     },
     "ios": {
       "supportsTablet": true
     },
     "web": {
       "bundler": "metro"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9733b274-c03c-42bc-96d0-a148b7b7f3e9"
+      }
     }
   }
 }
