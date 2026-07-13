@@ -25,21 +25,29 @@ A modern offline-first Billing & POS application built using **React Native**, *
 | Dashboard | Products |
 |-----------|----------|
 | ![](assets/screenshots/dashboard.jpeg) | ![](assets/screenshots/products.jpeg) |
+
+
 |                                        |  ![](assets/screenshots/addProduct.jpeg) |
 
 | Billing | History |
 |----------|---------|
 | ![](assets/screenshots/checkout.jpeg) | ![](assets/screenshots/history.jpeg) |
+
+
 | ![](assets/screenshots/quickBIll.jpeg) | 
 
 | Reports | Recipt |
 |----------|---------|
 | ![](assets/screenshots/report1.jpeg) | ![](assets/screenshots/receipt.jpeg) |
+
+
 | ![](assets/screenshots/report2.jpeg) | 
 
 | Settings | about |
 |----------|---------|
 | ![](assets/screenshots/setting1.jpeg) | ![](assets/screenshots/about.jpeg) |
+
+
 ![](assets/screenshots/setting2.jpeg) |
 
 ---
@@ -80,7 +88,7 @@ BillingApp/
 ## 1. Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/BillingApp.git
+git clone https://github.com/ykcodehub/Billing-Application.git
 
 cd BillingApp
 ```
