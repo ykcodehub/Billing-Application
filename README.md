@@ -22,33 +22,75 @@ A modern offline-first Billing & POS application built using **React Native**, *
 
 ## 📱 Screenshots
 
-| Dashboard | Products |
-|-----------|----------|
-| ![](assets/screenshots/dashboard.jpeg) | ![](assets/screenshots/products.jpeg) |
+<table>
 
+<tr>
+<td align="center">
+<b>1. Dashboard</b><br><br>
+<img src="assets/screenshots/dashboard.jpeg" width="210", height="400">
+</td>
 
-|                                        |  ![](assets/screenshots/addProduct.jpeg) |
+<td align="center">
+<b>2. Add Product</b><br><br>
+<img src="assets/screenshots/addProduct.jpeg" width="210", height="400">
+</td>
 
-| Billing | History |
-|----------|---------|
-| ![](assets/screenshots/checkout.jpeg) | ![](assets/screenshots/history.jpeg) |
+<td align="center">
+<b>3. Products</b><br><br>
+<img src="assets/screenshots/products.jpeg" width="210", height="400">
+</td>
 
+<td align="center">
+<b>4. Normal Billing</b><br><br>
+<img src="assets/screenshots/checkout.jpeg" width="210", height="400">
+</td
+</tr>
 
-| ![](assets/screenshots/quickBIll.jpeg) | 
+<tr>
+<td align="center">
+<b>5. Quick Billing</b><br><br>
+<img src="assets/screenshots/quickBIll.jpeg" width="210", height="400">
+</td>
 
-| Reports | Recipt |
-|----------|---------|
-| ![](assets/screenshots/report1.jpeg) | ![](assets/screenshots/receipt.jpeg) |
+<td align="center">
+<b>6. History</b><br><br>
+<img src="assets/screenshots/history.jpeg" width="210", height="400">
+</td>
 
+<td align="center">
+<b>7. Sales Reports</b><br><br>
+<img src="assets/screenshots/report1.jpeg" width="210", height="400">
+</td>
 
-| ![](assets/screenshots/report2.jpeg) | 
+<td align="center">
+<b>8. CSV Reports</b><br><br>
+<img src="assets/screenshots/report2.jpeg" width="210", height="400">
+</td>
+</tr>
 
-| Settings | about |
-|----------|---------|
-| ![](assets/screenshots/setting1.jpeg) | ![](assets/screenshots/about.jpeg) |
+<tr>
+<td align="center">
+<b>9. Receipt Preview</b><br><br>
+<img src="assets/screenshots/receipt.jpeg" width="210", height="400">
+</td>
 
+<td align="center">
+<b>10. Store Settings</b><br><br>
+<img src="assets/screenshots/setting1.jpeg" width="210", height="400">
+</td>
 
-![](assets/screenshots/setting2.jpeg) |
+<td align="center">
+<b>11. Printer Settings</b><br><br>
+<img src="assets/screenshots/setting2.jpeg" width="210", height="400">
+</td>
+
+<td align="center">
+<b>12. About</b><br><br>
+<img src="assets/screenshots/about.jpeg" width="210", height="400">
+</td>
+</tr>
+
+</table>
 
 ---
 
