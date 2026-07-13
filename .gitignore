@@ -1,48 +1,88 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# ==========================
+# Dependencies
+# ==========================
 node_modules/
 
+# ==========================
 # Expo
+# ==========================
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# ==========================
+# Native Build Folders
+# ==========================
+android/
+ios/
+
+# ==========================
+# Android / iOS Certificates
+# ==========================
 .kotlin/
-*.orig.*
 *.jks
+*.keystore
 *.p8
 *.p12
 *.key
 *.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
 *.pem
 
-# local env files
+# ==========================
+# Environment Files
+# ==========================
+.env
+.env.*
 .env*.local
 
-# typescript
+# ==========================
+# Metro
+# ==========================
+.metro-health-check*
+
+# ==========================
+# Logs
+# ==========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================
+# TypeScript
+# ==========================
 *.tsbuildinfo
 
-app-example
+# ==========================
+# IDE
+# ==========================
+.vscode/
+.idea/
+*.iml
 
-# generated native folders
-/ios
-/android
-node_modules/
-.expo/
-.expo-shared/
-dist/
-.env
+# ==========================
+# Operating System
+# ==========================
+.DS_Store
+Thumbs.db
+
+# ==========================
+# Build Outputs
+# ==========================
+*.apk
+*.aab
+
+# ==========================
+# SQLite (Optional)
+# Uncomment if you don't want
+# local database in GitHub
+# ==========================
+# *.db
+# *.db-journal
+
+# ==========================
+# Misc
+# ==========================
+*.orig.*
+app-example/

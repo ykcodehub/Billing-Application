@@ -6,20 +6,47 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+
+    "icon": "./assets/logo.png",
+
     "plugins": [
       "expo-router",
       "@react-native-community/datetimepicker"
     ],
+
     "android": {
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.billingapp"
+      "package": "com.anonymous.billingapp",
+
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#FFFFFF"
+      },
+
+      "permissions": [
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
+
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+
     "ios": {
       "supportsTablet": true
     },
+
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/logo.png"
     },
+
     "extra": {
       "router": {},
       "eas": {

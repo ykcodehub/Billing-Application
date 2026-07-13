@@ -9,30 +9,48 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { BillService } from "../../services/billService";
+import { PrintService } from "../../services/printService";
 
 export default function QuickBilling() {
   const [amount, setAmount] = useState("");
   const [paymentMode, setPaymentMode] = useState("Cash");
 
-  function generateBill() {
-    if (!amount || Number(amount) <= 0) {
-      Alert.alert("Enter valid amount");
-      return;
-    }
+  async function generateBill() {
 
-    const billNo = BillService.save(
-      [],
-      Number(amount),
-      paymentMode,
-      "QUICK"
+  if (!amount || Number(amount) <= 0) {
+    Alert.alert("Enter valid amount");
+    return;
+  }
+
+  const billNo = BillService.save(
+    [],
+    Number(amount),
+    paymentMode,
+    "QUICK"
+  );
+
+  // Latest bill nikalo
+  const bills = BillService.getBills() as any[];
+
+  if (bills.length > 0) {
+
+    await PrintService.printReceipt(
+      bills[0],
+      []
     );
 
-    Alert.alert("Success", `${billNo} Generated`);
-
-    setAmount("");
-
-    router.back();
   }
+
+  Alert.alert(
+    "Success",
+    `${billNo} Generated`
+  );
+
+  setAmount("");
+
+  router.back();
+
+}
 
   return (
     <View style={styles.container}>

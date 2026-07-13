@@ -1,12 +1,14 @@
 import { useLocalSearchParams } from "expo-router";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
 import { Pressable } from "react-native";
-import { ReceiptHtml } from "../../components/receipt/ReceiptHtml";
-import { PdfService } from "../../services/pdfService";
+// import { ReceiptHtml } from "../../components/receipt/ReceiptHtml";
+// import { PdfService } from "../../services/pdfService";
 
 import { BillService } from "../../services/billService";
 import { SettingsService } from "../../services/settingsService";
 import Receipt from "../../components/receipt/Receipt";
+import { PrintService } from "../../services/printService";
+import { Alert } from "react-native";
 
 
 export default function BillDetails() {
@@ -39,31 +41,41 @@ export default function BillDetails() {
         bill={bill}
         items={items}
       />
-    <Pressable
+      <Pressable
+  style={styles.pdf}
+  onPress={async () => {
 
-style={styles.pdf}
+    try {
 
-onPress={async()=>{
+      await PrintService.printReceipt(
+        bill,
+        items
+      );
 
-const html=ReceiptHtml(
-store,
-bill,
-items
-);
+      Alert.alert(
+        "Success",
+        "Print command sent."
+      );
 
-await PdfService.generate(html);
+    } catch (e: any) {
 
-}}
+      Alert.alert(
+        "Print Failed",
+        e.message
+      );
 
+    }
+
+  }}
 >
 
-<Text style={styles.pdfText}>
-
-Share PDF
-
-</Text>
+  <Text style={styles.pdfText}>
+    Print Bill
+  </Text>
 
 </Pressable>
+
+
     </ScrollView>
   );
 }

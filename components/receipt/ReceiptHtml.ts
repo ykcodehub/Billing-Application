@@ -10,6 +10,20 @@ export function ReceiptHtml(
 
 <body style="font-family:monospace;padding:20px;">
 
+${store?.logo ? `
+<div style="text-align:center;margin-bottom:10px;">
+  <img
+    src="${store.logo}"
+    style="
+      width:70px;
+      height:70px;
+      object-fit:contain;
+      border-radius:10px;
+    "
+  />
+</div>
+` : ""}
+
 <h2 style="text-align:center;">
 ${store?.storeName || "STORE"}
 </h2>

@@ -1,8 +1,9 @@
-import { View, Button, Alert } from "react-native";
+import { View, Alert, Pressable, Text, StyleSheet } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { BillService } from "../../services/billService";
 import { PrintService } from "../../services/printService";
+import { SettingsService } from "../../services/settingsService";
 
 export default function Checkout() {
 
@@ -20,15 +21,21 @@ export default function Checkout() {
       mode
     );
 
-    await PrintService.printReceipt(
-      {
-        billNo,
-        total,
-        paymentMode: mode,
-        createdAt: new Date().toISOString(),
-      },
-      cart
-    );
+    const settings: any = SettingsService.get();
+
+    if (settings?.autoPrint) {
+
+      await PrintService.autoPrint(
+        {
+          billNo,
+          total,
+          paymentMode: mode,
+          createdAt: new Date().toISOString(),
+        },
+        cart
+      );
+
+    }
 
     Alert.alert(
       "Success",
@@ -41,37 +48,63 @@ export default function Checkout() {
 
   return (
 
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        padding: 20,
-        gap: 15,
-      }}
-    >
+    <View style={styles.container}>
 
-      <Button
-        title="Cash"
+      <Pressable
+        style={[styles.button, { backgroundColor: "#4CAF50" }]}
         onPress={() => pay("Cash")}
-      />
+      >
+        <Text style={styles.text}>Cash</Text>
+      </Pressable>
 
-      <Button
-        title="UPI"
+      <Pressable
+        style={[styles.button, { backgroundColor: "#2196F3" }]}
         onPress={() => pay("UPI")}
-      />
+      >
+        <Text style={styles.text}>UPI</Text>
+      </Pressable>
 
-      <Button
-        title="Card"
+      <Pressable
+        style={[styles.button, { backgroundColor: "#FF9800" }]}
         onPress={() => pay("Card")}
-      />
+      >
+        <Text style={styles.text}>Card</Text>
+      </Pressable>
 
-      <Button
-        title="Mixed"
+      <Pressable
+        style={[styles.button, { backgroundColor: "#9C27B0" }]}
         onPress={() => pay("Mixed")}
-      />
+      >
+        <Text style={styles.text}>Mixed</Text>
+      </Pressable>
 
     </View>
 
   );
 
 }
+
+const styles = StyleSheet.create({
+
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+    gap: 18,
+    backgroundColor: "#f5f5f5",
+  },
+
+  button: {
+    paddingVertical: 18,
+    borderRadius: 14,
+    alignItems: "center",
+    elevation: 4,
+  },
+
+  text: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+
+});

@@ -16,7 +16,7 @@ export default function BillingScreen() {
     decrease,
   } = useCart();
 
-  const checkout = () => {
+  function checkout() {
 
     if (cart.length === 0) return;
 
@@ -28,20 +28,20 @@ export default function BillingScreen() {
       },
     });
 
-  };
+  }
 
   return (
 
     <View style={styles.container}>
 
-      <Text style={styles.title}>Billing</Text>
+      <Text style={styles.title}>
+        Billing
+      </Text>
 
       <FlatList
-
         data={products}
-
         keyExtractor={(item: any) => item.id.toString()}
-
+        contentContainerStyle={{ paddingBottom: 15 }}
         renderItem={({ item }) => (
 
           <Pressable
@@ -55,7 +55,7 @@ export default function BillingScreen() {
                 {item.name}
               </Text>
 
-              <Text>
+              <Text style={styles.price}>
                 ₹ {item.price}
               </Text>
 
@@ -64,7 +64,6 @@ export default function BillingScreen() {
           </Pressable>
 
         )}
-
       />
 
       <View style={styles.cart}>
@@ -73,39 +72,49 @@ export default function BillingScreen() {
           Cart
         </Text>
 
-        {cart.map((item: any) => (
+        {
+          cart.map((item: any) => (
 
-          <View
-            key={item.id}
-            style={styles.row}
-          >
-
-            <Text style={{ flex: 1 }}>
-              {item.name}
-            </Text>
-
-            <Pressable
-              onPress={() => decrease(item.id)}
+            <View
+              key={item.id}
+              style={styles.row}
             >
-              <Text style={styles.btn}>-</Text>
-            </Pressable>
 
-            <Text style={styles.qty}>
-              {item.qty}
-            </Text>
+              <Text
+                style={styles.itemName}
+              >
+                {item.name}
+              </Text>
 
-            <Pressable
-              onPress={() => increase(item.id)}
-            >
-              <Text style={styles.btn}>+</Text>
-            </Pressable>
+              <Pressable
+                style={styles.circleButton}
+                onPress={() => decrease(item.id)}
+              >
+                <Text style={styles.buttonText}>
+                  −
+                </Text>
+              </Pressable>
 
-          </View>
+              <Text style={styles.qty}>
+                {item.qty}
+              </Text>
 
-        ))}
+              <Pressable
+                style={styles.circleButton}
+                onPress={() => increase(item.id)}
+              >
+                <Text style={styles.buttonText}>
+                  +
+                </Text>
+              </Pressable>
+
+            </View>
+
+          ))
+        }
 
         <Text style={styles.total}>
-          Total : ₹ {total}
+          Total : ₹ {total.toFixed(2)}
         </Text>
 
         <Pressable
@@ -134,71 +143,101 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: 26,
+    fontWeight: "800",
     marginBottom: 15,
+    color: "#111",
   },
 
   product: {
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
+    padding: 16,
+    borderRadius: 12,
     marginBottom: 10,
+    elevation: 2,
   },
 
   name: {
-    fontWeight: "700",
     fontSize: 17,
+    fontWeight: "700",
+    color: "#111",
+  },
+
+  price: {
+    marginTop: 4,
+    color: "#555",
+    fontSize: 15,
   },
 
   cart: {
-    marginTop: 10,
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
+    borderRadius: 15,
+    padding: 18,
+    elevation: 3,
+    marginTop: 10,
   },
 
   heading: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "800",
+    marginBottom: 15,
+    color: "#111",
   },
 
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 15,
   },
 
-  btn: {
-    fontSize: 22,
+  itemName: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  circleButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#111",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontSize: 24,
     fontWeight: "700",
-    paddingHorizontal: 10,
   },
 
   qty: {
-    width: 35,
+    width: 45,
     textAlign: "center",
+    fontSize: 18,
+    fontWeight: "700",
   },
 
   total: {
-    marginTop: 15,
-    fontWeight: "700",
-    fontSize: 18,
+    fontSize: 23,
+    fontWeight: "800",
+    color: "#111",
+    marginTop: 10,
+    marginBottom: 15,
   },
 
   checkout: {
-    marginTop: 20,
-    backgroundColor: "#111",
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: "#19C37D",
+    paddingVertical: 18,
+    borderRadius: 14,
+    alignItems: "center",
   },
 
   checkoutText: {
     color: "#fff",
-    textAlign: "center",
-    fontWeight: "700",
-    fontSize: 17,
+    fontSize: 20,
+    fontWeight: "800",
   },
 
 });

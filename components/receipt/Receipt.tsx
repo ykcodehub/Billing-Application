@@ -1,5 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
-
+import { View, Text, StyleSheet, Image } from "react-native";
 export default function Receipt({
 
   store,
@@ -14,6 +13,16 @@ return(
 
 <View style={styles.paper}>
 
+{
+store?.logo ?
+
+<Image
+source={{ uri: store.logo }}
+style={styles.logo}
+/>
+
+:null
+}
 <Text style={styles.store}>
 {store?.storeName || "Billing Store"}
 </Text>
@@ -80,7 +89,7 @@ TOTAL
 </Text>
 
 <Text style={styles.total}>
-₹ {bill.total}
+Rs {bill.total}
 </Text>
 
 </View>
@@ -146,6 +155,14 @@ footer:{
 textAlign:"center",
 marginTop:3,
 fontWeight:"600"
-}
+},
+logo:{
+width:70,
+height:70,
+borderRadius:12,
+alignSelf:"center",
+marginBottom:10,
+resizeMode:"contain",
+},
 
 });

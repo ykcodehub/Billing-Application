@@ -1,98 +1,124 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
+ Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  PermissionsAndroid,
+  Platform,
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { BluetoothService, PrinterDevice } from "../../services/bluetoothService";
+import {
+  BluetoothService,
+  PrinterDevice,
+} from "../../services/bluetoothService";
 
+import { SettingsService } from "../../services/settingsService";
 
 const PRINTER_KEY = "CONNECTED_PRINTER";
 
-
 export default function PrinterScreen() {
-
 
   const [devices, setDevices] = useState<PrinterDevice[]>([]);
   const [savedPrinter, setSavedPrinter] =
     useState<PrinterDevice | null>(null);
 
-  const [loading, setLoading] =
-    useState(false);
-
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-
     loadSavedPrinter();
-
   }, []);
 
-
-
   async function loadSavedPrinter() {
-
     try {
 
       const data =
         await AsyncStorage.getItem(PRINTER_KEY);
 
-
-      if(data){
-
-        setSavedPrinter(
-          JSON.parse(data)
-        );
-
+      if (data) {
+        setSavedPrinter(JSON.parse(data));
       }
 
+    } catch (e) {
+      console.log(e);
     }
-    catch(error){
+  }
 
-      console.log(error);
+  async function requestBluetoothPermissions() {
+
+    if (Platform.OS !== "android")
+      return true;
+
+    if (Platform.Version >= 31) {
+
+      const result =
+        await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        ]);
+
+      return (
+        result["android.permission.BLUETOOTH_SCAN"] ===
+          PermissionsAndroid.RESULTS.GRANTED &&
+        result["android.permission.BLUETOOTH_CONNECT"] ===
+          PermissionsAndroid.RESULTS.GRANTED
+      );
 
     }
+
+    const granted =
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+
+    return (
+      granted === PermissionsAndroid.RESULTS.GRANTED
+    );
 
   }
 
-
-
-  async function scanPrinters(){
+  async function scanPrinters() {
 
     try {
 
+      const granted =
+        await requestBluetoothPermissions();
+
+      if (!granted) {
+
+        Alert.alert(
+          "Permission Required",
+          "Please allow Bluetooth permission."
+        );
+
+        return;
+      }
+
       setLoading(true);
 
+      const list =
+        await BluetoothService.scan();
 
-      const paired =
-        await BluetoothService.paired();
-
-
-      setDevices(paired);
-
+      setDevices(list);
 
       Alert.alert(
-        "Success",
-        `${paired.length} paired devices found`
+        "Scan Complete",
+        `${list.length} device(s) found`
       );
 
-
-    }
-    catch(error:any){
+    } catch (e: any) {
 
       Alert.alert(
         "Bluetooth Error",
-        error.message
+        e.message
       );
 
-    }
-    finally{
+    } finally {
 
       setLoading(false);
 
@@ -100,53 +126,51 @@ export default function PrinterScreen() {
 
   }
 
-
-
-
-
   async function connectPrinter(
     device: PrinterDevice
-  ){
+  ) {
 
     try {
 
-
       setLoading(true);
-
 
       await BluetoothService.connect(
         device.address
       );
-
 
       await AsyncStorage.setItem(
         PRINTER_KEY,
         JSON.stringify(device)
       );
 
+      const settings: any =
+        SettingsService.get();
+
+      SettingsService.save({
+
+        ...settings,
+
+        printerName: device.name,
+
+        printerMac: device.address,
+
+      });
 
       setSavedPrinter(device);
 
-
-
       Alert.alert(
         "Connected",
-        `${device.name} connected`
+        `${device.name} connected successfully`
       );
 
-
-    }
-    catch(error:any){
-
+    } catch (e: any) {
 
       Alert.alert(
         "Connection Failed",
-        error.message
+        e.message
       );
 
-
-    }
-    finally{
+    } finally {
 
       setLoading(false);
 
@@ -154,88 +178,83 @@ export default function PrinterScreen() {
 
   }
 
+  async function disconnectPrinter() {
 
+    try {
 
-
-  async function disconnectPrinter(){
-
-
-    try{
-
-
-      if(!savedPrinter)
+      if (!savedPrinter)
         return;
-
 
       await BluetoothService.disconnect(
         savedPrinter.address
       );
 
-
       await AsyncStorage.removeItem(
         PRINTER_KEY
       );
 
+      const settings: any =
+        SettingsService.get();
+
+      SettingsService.save({
+
+        ...settings,
+
+        printerName: "",
+
+        printerMac: "",
+
+      });
 
       setSavedPrinter(null);
 
-
-
       Alert.alert(
         "Disconnected",
-        "Printer disconnected"
+        "Printer disconnected."
       );
 
-
-    }
-    catch(error:any){
+    } catch (e: any) {
 
       Alert.alert(
         "Error",
-        error.message
+        e.message
       );
 
     }
 
-
   }
 
-
-
-
-
-  function renderDevice(
-    {item}: {item:PrinterDevice}
-  ){
+  function renderDevice({
+    item,
+  }: {
+    item: PrinterDevice;
+  }) {
 
     const connected =
       savedPrinter?.address === item.address;
-
 
     return (
 
       <TouchableOpacity
         style={styles.device}
-        onPress={()=>connectPrinter(item)}
+        onPress={() =>
+          connectPrinter(item)
+        }
       >
 
         <Text style={styles.name}>
           {item.name}
         </Text>
 
-
         <Text style={styles.address}>
           {item.address}
         </Text>
 
-
-        {
-          connected &&
+        {connected && (
           <Text style={styles.connected}>
-            Connected
+            ✓ Connected
           </Text>
-        }
-
+        )}
 
       </TouchableOpacity>
 
@@ -243,41 +262,25 @@ export default function PrinterScreen() {
 
   }
 
-
-
-
-
   return (
 
     <View style={styles.container}>
-
 
       <Text style={styles.title}>
         Bluetooth Printer
       </Text>
 
-
-
-      {
-        savedPrinter &&
+      {savedPrinter && (
 
         <View style={styles.savedBox}>
 
           <Text style={styles.heading}>
-            Current Printer
+            Connected Printer
           </Text>
 
+          <Text>{savedPrinter.name}</Text>
 
-          <Text>
-            {savedPrinter.name}
-          </Text>
-
-
-          <Text>
-            {savedPrinter.address}
-          </Text>
-
-
+          <Text>{savedPrinter.address}</Text>
 
           <TouchableOpacity
             style={styles.disconnect}
@@ -290,61 +293,41 @@ export default function PrinterScreen() {
 
           </TouchableOpacity>
 
-
         </View>
 
-      }
-
-
-
-
+      )}
 
       <TouchableOpacity
         style={styles.scan}
         onPress={scanPrinters}
       >
 
-        {
-          loading ?
+        {loading ? (
 
-          <ActivityIndicator color="white"/>
+          <ActivityIndicator
+            color="#fff"
+          />
 
-          :
+        ) : (
 
           <Text style={styles.buttonText}>
-            Scan Paired Printers
+            Scan Bluetooth Devices
           </Text>
 
-        }
-
+        )}
 
       </TouchableOpacity>
 
-
-
-
-
       <FlatList
-
         data={devices}
-
-        keyExtractor={
-          item=>item.address
-        }
-
+        keyExtractor={(item) => item.address}
         renderItem={renderDevice}
-
         ListEmptyComponent={
-
           <Text style={styles.empty}>
-            No printer found
+            No Devices Found
           </Text>
-
         }
-
       />
-
-
 
     </View>
 
@@ -352,94 +335,84 @@ export default function PrinterScreen() {
 
 }
 
-
-
-
 const styles = StyleSheet.create({
 
-container:{
-  flex:1,
-  padding:20,
-  backgroundColor:"#fff",
-},
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+  },
 
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 20,
+  },
 
-title:{
-  fontSize:24,
-  fontWeight:"700",
-  marginBottom:20,
-},
+  savedBox: {
+    backgroundColor: "#F3F3F3",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
 
+  heading: {
+    fontWeight: "700",
+    marginBottom: 6,
+  },
 
-savedBox:{
-  padding:15,
-  borderRadius:10,
-  backgroundColor:"#eee",
-  marginBottom:20,
-},
+  scan: {
+    backgroundColor: "#19C37D",
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginBottom: 20,
+  },
 
+  device: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
 
-heading:{
-  fontWeight:"700",
-  marginBottom:5,
-},
+  name: {
+    fontSize: 17,
+    fontWeight: "700",
+  },
 
+  address: {
+    marginTop: 5,
+    color: "#666",
+  },
 
-scan:{
-  backgroundColor:"#111",
-  padding:15,
-  borderRadius:10,
-  alignItems:"center",
-  marginBottom:20,
-},
+  connected: {
+    marginTop: 8,
+    color: "green",
+    fontWeight: "700",
+  },
 
+  disconnect: {
+    backgroundColor: "#E53935",
+    marginTop: 15,
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+  },
 
-device:{
-  padding:15,
-  borderBottomWidth:1,
-  borderColor:"#ddd",
-},
+  buttonText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 16,
+  },
 
-
-name:{
-  fontSize:17,
-  fontWeight:"600",
-},
-
-
-address:{
-  color:"#666",
-  marginTop:5,
-},
-
-
-connected:{
-  marginTop:5,
-  color:"green",
-  fontWeight:"700",
-},
-
-
-disconnect:{
-  marginTop:10,
-  backgroundColor:"red",
-  padding:10,
-  borderRadius:8,
-  alignItems:"center",
-},
-
-
-buttonText:{
-  color:"#fff",
-  fontWeight:"700",
-},
-
-
-empty:{
-  textAlign:"center",
-  marginTop:30,
-  color:"#777",
-},
-
+  empty: {
+    textAlign: "center",
+    marginTop: 40,
+    color: "#777",
+    fontSize: 15,
+  },
 
 });

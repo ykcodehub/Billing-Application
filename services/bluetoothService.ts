@@ -11,12 +11,23 @@ export const BluetoothService = {
 
   async enableBluetooth() {
 
-    const enabled =
-      await RNBluetoothClassic.requestBluetoothEnabled();
+  const enabled =
+    await RNBluetoothClassic.isBluetoothEnabled();
 
-    return enabled;
+  if (enabled) {
+    return true;
+  }
 
-  },
+  const result =
+    await RNBluetoothClassic.requestBluetoothEnabled();
+
+  if (!result) {
+    throw new Error("Please enable Bluetooth");
+  }
+
+  return true;
+
+},
 
   async scan(): Promise<PrinterDevice[]> {
 
@@ -32,7 +43,10 @@ export const BluetoothService = {
 
   },
 
+ 
   async paired(): Promise<PrinterDevice[]> {
+    
+    await this.enableBluetooth();
 
     const devices =
       await RNBluetoothClassic.getBondedDevices();

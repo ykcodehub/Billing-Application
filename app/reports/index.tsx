@@ -262,7 +262,7 @@ sales={year?.sales ?? 0}
 
 
 <Text style={styles.heading}>
-Lifetime Sales
+Total Sales
 </Text>
 
 

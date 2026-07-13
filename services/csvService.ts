@@ -6,14 +6,25 @@ export const CsvService = {
   async exportSales(rows: any[]) {
 
     let csv =
-      "Bill No,Date,Product,Qty,Price,Amount,Payment Mode,Bill Type\n";
+      "Bill No,Date,Time,Product,Qty,Price,Amount,Payment Mode,Bill Type\n";
 
     rows.forEach((item) => {
 
+      const date = new Date(item.createdAt);
+
+      const dateOnly = date.toLocaleDateString("en-GB");
+
+      const timeOnly = date.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
       csv +=
         `${item.billNo},` +
-        `${new Date(item.createdAt).toLocaleString()},` +
-        `${item.name},` +
+        `${dateOnly},` +
+        `${timeOnly},` +
+        `"${item.name}",` +
         `${item.qty},` +
         `${item.price},` +
         `${item.amount},` +

@@ -41,11 +41,45 @@ export function initializeDatabase() {
       logo TEXT,
       printerName TEXT,
       printerMac TEXT,
-      autoPrint INTEGER DEFAULT 1
+      autoPrint INTEGER DEFAULT 1,
+      theme TEXT DEFAULT 'Light'
     );
   `);
 
-  // Insert default settings row only once
+  // -----------------------------
+  // Database Migration
+  // -----------------------------
+
+  const migrations = [
+
+    "ALTER TABLE settings ADD COLUMN logo TEXT",
+
+    "ALTER TABLE settings ADD COLUMN printerName TEXT",
+
+    "ALTER TABLE settings ADD COLUMN printerMac TEXT",
+
+    "ALTER TABLE settings ADD COLUMN autoPrint INTEGER DEFAULT 1",
+
+    "ALTER TABLE settings ADD COLUMN theme TEXT DEFAULT 'Light'",
+
+  ];
+
+  migrations.forEach((sql) => {
+
+    try {
+
+      db.execSync(sql);
+
+    } catch (e) {
+      // Ignore if column already exists
+    }
+
+  });
+
+  // -----------------------------
+  // Default Settings Row
+  // -----------------------------
+
   db.runSync(`
     INSERT INTO settings (
       storeName,
@@ -54,7 +88,8 @@ export function initializeDatabase() {
       logo,
       printerName,
       printerMac,
-      autoPrint
+      autoPrint,
+      theme
     )
     SELECT
       'Billing Store',
@@ -63,7 +98,8 @@ export function initializeDatabase() {
       '',
       '',
       '',
-      1
+      1,
+      'Light'
     WHERE NOT EXISTS (
       SELECT 1 FROM settings
     );

@@ -6,19 +6,27 @@ import {
   Pressable,
   Alert,
   ScrollView,
+  View,
+  Switch,
 } from "react-native";
 import { router } from "expo-router";
 
 import { SettingsService } from "../../services/settingsService";
+import * as ImagePicker from "expo-image-picker";
+import { Image } from "react-native";
 
 export default function Settings() {
 
   const [storeName, setStoreName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [logo, setLogo] = useState("");
 
   const [printerName, setPrinterName] = useState("");
   const [printerMac, setPrinterMac] = useState("");
+
+  const [autoPrint, setAutoPrint] = useState(true);
+  const [theme, setTheme] =  useState<"Light" | "Dark">("Light");
 
   useEffect(() => {
 
@@ -29,27 +37,70 @@ export default function Settings() {
     setStoreName(data.storeName ?? "");
     setAddress(data.address ?? "");
     setPhone(data.phone ?? "");
+    setLogo(data.logo ?? "");
     setPrinterName(data.printerName ?? "");
     setPrinterMac(data.printerMac ?? "");
+    setAutoPrint(Boolean(data.autoPrint));
+    setTheme(data.theme || "Light");
 
   }, []);
 
+  async function pickLogo() {
+
+  const permission =
+    await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  if (!permission.granted) {
+
+    Alert.alert(
+      "Permission Required",
+      "Gallery permission is required."
+    );
+
+    return;
+
+  }
+
+  const result =
+    await ImagePicker.launchImageLibraryAsync({
+
+      mediaTypes: ["images"],
+
+      allowsEditing: true,
+
+      aspect: [1, 1],
+
+      quality: 1,
+
+    });
+
+  if (!result.canceled) {
+
+    setLogo(
+      result.assets[0].uri
+    );
+
+  }
+
+}
   function save() {
 
     SettingsService.save({
 
-      storeName,
-      address,
-      phone,
+    storeName,
+    address,
+    phone,
 
-      logo: "",
+    logo,
 
-      printerName,
-      printerMac,
+    printerName,
+    printerMac,
 
-      autoPrint: 1,
+    autoPrint: autoPrint ? 1 : 0,
 
-    });
+    theme,
+
+  });
 
     Alert.alert(
       "Success",
@@ -97,6 +148,58 @@ export default function Settings() {
       />
 
       <Text style={styles.heading}>
+  Store Logo
+</Text>
+
+<Pressable
+  style={styles.option}
+  onPress={pickLogo}
+>
+
+  {
+    logo ?
+
+    <Image
+      source={{ uri: logo }}
+      style={{
+        width:80,
+        height:80,
+        borderRadius:10,
+        alignSelf:"center",
+        marginBottom:10,
+      }}
+    />
+
+    :
+
+    <View
+      style={{
+        width:80,
+        height:80,
+        borderRadius:10,
+        backgroundColor:"#ddd",
+        alignSelf:"center",
+        justifyContent:"center",
+        alignItems:"center",
+        marginBottom:10,
+      }}
+    >
+
+      <Text>Logo</Text>
+
+    </View>
+
+  }
+
+  <Text
+    style={styles.optionTitle}
+  >
+    {logo ? "Change Logo" : "Upload Logo"}
+  </Text>
+
+</Pressable>
+
+      <Text style={styles.heading}>
         Printer
       </Text>
 
@@ -114,26 +217,98 @@ export default function Settings() {
       </Pressable>
 
       <Text style={styles.heading}>
-        Appearance
+  Printing
+</Text>
+
+<View style={styles.option}>
+
+  <View
+    style={{
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    }}
+  >
+    <View>
+      <Text style={styles.optionTitle}>
+        Auto Print Bill
       </Text>
 
-      <Pressable
-        style={styles.option}
-        onPress={() =>
-          Alert.alert(
-            "Coming Soon",
-            "Theme Settings will be available soon."
-          )
-        }
-      >
-        <Text style={styles.optionTitle}>
-          Theme
-        </Text>
+      <Text style={styles.optionSub}>
+        Print receipt automatically after checkout
+      </Text>
+    </View>
 
-        <Text style={styles.optionSub}>
-          Light
-        </Text>
-      </Pressable>
+    <Switch
+      value={autoPrint}
+      onValueChange={setAutoPrint}
+    />
+  </View>
+
+</View>
+
+<Text style={styles.heading}>
+  Appearance
+</Text>
+
+<View style={styles.option}>
+
+  <Text style={styles.optionTitle}>
+    Theme
+  </Text>
+
+  <View
+    style={{
+      flexDirection: "row",
+      marginTop: 15,
+    }}
+  >
+
+    <Pressable
+      style={[
+        styles.themeButton,
+        theme === "Light" &&
+          styles.themeSelected,
+      ]}
+      onPress={() => setTheme("Light")}
+    >
+      <Text
+        style={{
+          color:
+            theme === "Light"
+              ? "#fff"
+              : "#111",
+          fontWeight: "700",
+        }}
+      >
+        Light
+      </Text>
+    </Pressable>
+
+    <Pressable
+      style={[
+        styles.themeButton,
+        theme === "Dark" &&
+          styles.themeSelected,
+      ]}
+      onPress={() => setTheme("Dark")}
+    >
+      <Text
+        style={{
+          color:
+            theme === "Dark"
+              ? "#fff"
+              : "#111",
+          fontWeight: "700",
+        }}
+      >
+        Dark
+      </Text>
+    </Pressable>
+
+  </View>
+
+</View>
 
       <Text style={styles.heading}>
         About
@@ -232,5 +407,18 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
   },
+
+  themeButton: {
+  flex: 1,
+  backgroundColor: "#eee",
+  paddingVertical: 12,
+  borderRadius: 10,
+  alignItems: "center",
+  marginHorizontal: 5,
+},
+
+themeSelected: {
+  backgroundColor: "#19C37D",
+},
 
 });

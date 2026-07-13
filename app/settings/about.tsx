@@ -64,7 +64,7 @@ export default function About() {
       </View>
 
       <Text style={styles.footer}>
-        © 2026 Yogendra Katuwal
+        © 2026 Billing App. All rights reserved.
       </Text>
 
     </ScrollView>

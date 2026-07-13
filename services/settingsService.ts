@@ -26,7 +26,8 @@ export const SettingsService = {
         logo=?,
         printerName=?,
         printerMac=?,
-        autoPrint=?`,
+        autoPrint=?,
+        theme=?`,
 
         [
           data.storeName,
@@ -36,6 +37,7 @@ export const SettingsService = {
           data.printerName,
           data.printerMac,
           data.autoPrint,
+          data.theme,
         ]
 
       );
@@ -52,9 +54,10 @@ export const SettingsService = {
           logo,
           printerName,
           printerMac,
-          autoPrint
+          autoPrint,
+          theme
         )
-        VALUES(?,?,?,?,?,?,?)`,
+        VALUES(?,?,?,?,?,?,?,?)`,
 
         [
           data.storeName,
@@ -64,6 +67,7 @@ export const SettingsService = {
           data.printerName,
           data.printerMac,
           data.autoPrint,
+          data.theme,
         ]
 
       );
