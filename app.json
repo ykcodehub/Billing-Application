@@ -7,7 +7,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
 
-    "icon": "./assets/logo.png",
+    "icon": "./assets/app-logo.png",
 
     "plugins": [
       "expo-router",
@@ -19,7 +19,7 @@
       "package": "com.anonymous.billingapp",
 
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
+        "foregroundImage": "./assets/app-logo.png",
         "backgroundColor": "#FFFFFF"
       },
 
@@ -33,7 +33,7 @@
     },
 
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./assets/app-logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
@@ -44,7 +44,7 @@
 
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/logo.png"
+      "favicon": "./assets/app-logo.png"
     },
 
     "extra": {

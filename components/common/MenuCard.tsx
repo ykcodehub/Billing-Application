@@ -1,4 +1,5 @@
 import { Pressable, Text, StyleSheet } from "react-native";
+import { wp, hp, rf, rr, isTablet } from "../../utils/responsive";
 
 export default function MenuCard({ title, onPress }: any) {
   return (
@@ -17,14 +18,16 @@ const styles = StyleSheet.create({
 
 card:{
 backgroundColor:"#fff",
-padding:20,
-borderRadius:12,
-marginBottom:15,
-elevation:2
+padding:wp(20),
+borderRadius:rr(12),
+marginBottom:hp(15),
+elevation:2,
+minHeight:isTablet ? hp(70) : hp(60),
+justifyContent:"center"
 },
 
 text:{
-fontSize:18,
+fontSize:isTablet ? rf(22) : rf(18),
 fontWeight:"600"
 }
 

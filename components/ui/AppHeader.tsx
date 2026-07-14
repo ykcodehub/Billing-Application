@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import Colors from "../../constants/colors";
+import { wp, hp, rf, isTablet } from "../../utils/responsive";
 
 interface Props {
   title: string;
@@ -16,19 +17,21 @@ export default function AppHeader({ title, subtitle }: Props) {
 }
 
 const styles = StyleSheet.create({
+
   container: {
-    marginBottom: 20,
+    marginBottom: hp(20),
   },
 
   subtitle: {
     color: "#777",
-    fontSize: 14,
+    fontSize: rf(14),
   },
 
   title: {
-    fontSize: 28,
+    fontSize: isTablet ? rf(34) : rf(28),
     fontWeight: "700",
     color: Colors.text,
-    marginTop: 2,
+    marginTop: hp(2),
   },
+
 });

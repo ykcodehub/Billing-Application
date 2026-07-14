@@ -7,10 +7,13 @@ import {
   Text,
   ScrollView,
   Alert,
+  Image,
+  useWindowDimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import { Image } from "react-native";
+
 
 import { ProductService } from "../../services/productService";
 
@@ -20,6 +23,8 @@ export default function AddProduct() {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [image, setImage] = useState("");
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
 
   async function pickImage() {
 
@@ -80,8 +85,15 @@ export default function AddProduct() {
   };
 
   return (
+  <SafeAreaView
+  style={{ flex: 1 }}
+  edges={["top", "bottom"]}
+>
     <ScrollView
-      style={styles.container}
+      style={[
+        styles.container,
+        isTablet && styles.tabletContainer,
+      ]}
       contentContainerStyle={{ paddingBottom: 40 }}
     >
       <TextInput
@@ -131,15 +143,13 @@ export default function AddProduct() {
 
         source={{uri:image}}
 
-        style={{
-
-        width:140,
-        height:140,
-        borderRadius:10,
-        alignSelf:"center",
-        marginVertical:15
-
-        }}
+        style={[
+          styles.image,
+          {
+            width: isTablet ? 220 : 140,
+            height: isTablet ? 220 : 140,
+          },
+        ]}
 
         />
 
@@ -155,32 +165,42 @@ export default function AddProduct() {
         </Text>
       </TouchableOpacity>
     </ScrollView>
+  </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: "#F6F6F6",
-    padding: 20,
+    paddingHorizontal: 18,
+    paddingTop: 10,
+  },
+
+  tabletContainer: {
+    maxWidth: 700,
+    width: "100%",
+    alignSelf: "center",
   },
 
   input: {
     backgroundColor: "#fff",
-    height: 55,
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    marginBottom: 15,
+    height: 58,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    marginBottom: 16,
     elevation: 2,
+    fontSize: 16,
   },
 
   button: {
     backgroundColor: "#111",
-    height: 55,
-    borderRadius: 12,
+    height: 58,
+    borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 15,
+    marginTop: 16,
   },
 
   buttonText: {
@@ -188,4 +208,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
   },
+
+  image: {
+    alignSelf: "center",
+    borderRadius: 14,
+    marginVertical: 18,
+  },
+
 });

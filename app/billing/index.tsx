@@ -1,4 +1,12 @@
-import { View, FlatList, Text, Pressable, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  View,
+  FlatList,
+  Text,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
 import { router } from "expo-router";
 
 import useProducts from "../../hooks/useProducts";
@@ -16,6 +24,10 @@ export default function BillingScreen() {
     decrease,
   } = useCart();
 
+  const { width } = useWindowDimensions();
+
+  const isTablet = width >= 768;
+
   function checkout() {
 
     if (cart.length === 0) return;
@@ -32,103 +44,119 @@ export default function BillingScreen() {
 
   return (
 
-    <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
 
-      <Text style={styles.title}>
-        Billing
-      </Text>
+      <View
+        style={[
+          styles.container,
+          isTablet && styles.tabletContainer,
+        ]}
+      >
 
-      <FlatList
-        data={products}
-        keyExtractor={(item: any) => item.id.toString()}
-        contentContainerStyle={{ paddingBottom: 15 }}
-        renderItem={({ item }) => (
-
-          <Pressable
-            style={styles.product}
-            onPress={() => addItem(item)}
-          >
-
-            <View>
-
-              <Text style={styles.name}>
-                {item.name}
-              </Text>
-
-              <Text style={styles.price}>
-                ₹ {item.price}
-              </Text>
-
-            </View>
-
-          </Pressable>
-
-        )}
-      />
-
-      <View style={styles.cart}>
-
-        <Text style={styles.heading}>
-          Cart
+        <Text style={styles.title}>
+          Billing
         </Text>
 
-        {
-          cart.map((item: any) => (
+        <FlatList
+          data={products}
+          keyExtractor={(item: any) => item.id.toString()}
+          contentContainerStyle={{ paddingBottom: 15 }}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
 
-            <View
-              key={item.id}
-              style={styles.row}
+            <Pressable
+              style={[
+                styles.product,
+                isTablet && styles.productTablet,
+              ]}
+              onPress={() => addItem(item)}
             >
 
-              <Text
-                style={styles.itemName}
-              >
-                {item.name}
-              </Text>
+              <View>
 
-              <Pressable
-                style={styles.circleButton}
-                onPress={() => decrease(item.id)}
-              >
-                <Text style={styles.buttonText}>
-                  −
+                <Text style={styles.name}>
+                  {item.name}
                 </Text>
-              </Pressable>
 
-              <Text style={styles.qty}>
-                {item.qty}
-              </Text>
-
-              <Pressable
-                style={styles.circleButton}
-                onPress={() => increase(item.id)}
-              >
-                <Text style={styles.buttonText}>
-                  +
+                <Text style={styles.price}>
+                  ₹ {item.price}
                 </Text>
-              </Pressable>
 
-            </View>
+              </View>
 
-          ))
-        }
+            </Pressable>
 
-        <Text style={styles.total}>
-          Total : ₹ {total.toFixed(2)}
-        </Text>
+          )}
+        />
 
-        <Pressable
-          style={styles.checkout}
-          onPress={checkout}
+        <View
+          style={[
+            styles.cart,
+            isTablet && styles.cartTablet,
+          ]}
         >
-          <Text style={styles.checkoutText}>
-            Checkout
+
+          <Text style={styles.heading}>
+            Cart
           </Text>
-        </Pressable>
+
+          {
+            cart.map((item: any) => (
+
+              <View
+                key={item.id}
+                style={styles.row}
+              >
+
+                <Text style={styles.itemName}>
+                  {item.name}
+                </Text>
+
+                <Pressable
+                  style={styles.circleButton}
+                  onPress={() => decrease(item.id)}
+                >
+                  <Text style={styles.buttonText}>
+                    −
+                  </Text>
+                </Pressable>
+
+                <Text style={styles.qty}>
+                  {item.qty}
+                </Text>
+
+                <Pressable
+                  style={styles.circleButton}
+                  onPress={() => increase(item.id)}
+                >
+                  <Text style={styles.buttonText}>
+                    +
+                  </Text>
+                </Pressable>
+
+              </View>
+
+            ))
+          }
+
+          <Text style={styles.total}>
+            Total : ₹ {total.toFixed(2)}
+          </Text>
+
+          <Pressable
+            style={styles.checkout}
+            onPress={checkout}
+          >
+            <Text style={styles.checkoutText}>
+              Checkout
+            </Text>
+          </Pressable>
+
+        </View>
 
       </View>
 
-    </View>
+    </SafeAreaView>
 
   );
 
@@ -138,8 +166,16 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    padding: 15,
     backgroundColor: "#f5f5f5",
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 16,
+  },
+
+  tabletContainer: {
+    width: "100%",
+    maxWidth: 900,
+    alignSelf: "center",
   },
 
   title: {
@@ -155,6 +191,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
     elevation: 2,
+  },
+
+  productTablet: {
+    padding: 20,
   },
 
   name: {
@@ -177,8 +217,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
+  cartTablet: {
+    padding: 24,
+  },
+
   heading: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "800",
     marginBottom: 15,
     color: "#111",
@@ -194,12 +238,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: "600",
+    color: "#111",
   },
 
   circleButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     backgroundColor: "#111",
     justifyContent: "center",
     alignItems: "center",
@@ -217,6 +262,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     fontWeight: "700",
+    color: "#111",
   },
 
   total: {
@@ -229,8 +275,9 @@ const styles = StyleSheet.create({
 
   checkout: {
     backgroundColor: "#19C37D",
-    paddingVertical: 18,
+    minHeight: 58,
     borderRadius: 14,
+    justifyContent: "center",
     alignItems: "center",
   },
 

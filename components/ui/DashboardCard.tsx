@@ -1,5 +1,18 @@
-import { Pressable, Text, StyleSheet, View } from "react-native";
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+} from "react-native";
+
 import Colors from "../../constants/colors";
+
+import {
+  wp,
+  hp,
+  rf,
+  rr,
+  isTablet,
+} from "../../utils/responsive";
 
 interface Props {
   title: string;
@@ -26,28 +39,33 @@ export default function DashboardCard({
 }
 
 const styles = StyleSheet.create({
+
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: rr(18),
+    padding: wp(18),
     elevation: 2,
-    marginBottom: 15,
+    marginBottom: hp(15),
+    minHeight: isTablet ? hp(140) : hp(120),
+    justifyContent: "center",
   },
 
   title: {
-    fontSize: 14,
+    fontSize: rf(14),
     color: "#666",
   },
 
   value: {
-    fontSize: 28,
+    fontSize: isTablet ? rf(34) : rf(28),
     fontWeight: "700",
-    marginTop: 10,
+    marginTop: hp(10),
     color: Colors.black,
   },
 
   subtitle: {
-    marginTop: 5,
+    marginTop: hp(5),
     color: "#888",
+    fontSize: rf(14),
   },
+
 });

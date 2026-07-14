@@ -1,4 +1,5 @@
-import { View, Alert, Pressable, Text, StyleSheet } from "react-native";
+import { View, Alert, Pressable, Text, StyleSheet, useWindowDimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { BillService } from "../../services/billService";
@@ -12,6 +13,10 @@ export default function Checkout() {
   const cart = JSON.parse(params.cart as string);
 
   const total = Number(params.total);
+
+  const { width } = useWindowDimensions();
+
+  const isTablet = width >= 768;
 
   async function pay(mode: string) {
 
@@ -48,37 +53,46 @@ export default function Checkout() {
 
   return (
 
-    <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
 
-      <Pressable
-        style={[styles.button, { backgroundColor: "#4CAF50" }]}
-        onPress={() => pay("Cash")}
+      <View
+        style={[
+          styles.container,
+          isTablet && styles.tabletContainer,
+        ]}
       >
-        <Text style={styles.text}>Cash</Text>
-      </Pressable>
 
-      <Pressable
-        style={[styles.button, { backgroundColor: "#2196F3" }]}
-        onPress={() => pay("UPI")}
-      >
-        <Text style={styles.text}>UPI</Text>
-      </Pressable>
+        <Pressable
+          style={[styles.button, { backgroundColor: "#4CAF50" }]}
+          onPress={() => pay("Cash")}
+        >
+          <Text style={styles.text}>Cash</Text>
+        </Pressable>
 
-      <Pressable
-        style={[styles.button, { backgroundColor: "#FF9800" }]}
-        onPress={() => pay("Card")}
-      >
-        <Text style={styles.text}>Card</Text>
-      </Pressable>
+        <Pressable
+          style={[styles.button, { backgroundColor: "#2196F3" }]}
+          onPress={() => pay("UPI")}
+        >
+          <Text style={styles.text}>UPI</Text>
+        </Pressable>
 
-      <Pressable
-        style={[styles.button, { backgroundColor: "#9C27B0" }]}
-        onPress={() => pay("Mixed")}
-      >
-        <Text style={styles.text}>Mixed</Text>
-      </Pressable>
+        <Pressable
+          style={[styles.button, { backgroundColor: "#FF9800" }]}
+          onPress={() => pay("Card")}
+        >
+          <Text style={styles.text}>Card</Text>
+        </Pressable>
 
-    </View>
+        <Pressable
+          style={[styles.button, { backgroundColor: "#9C27B0" }]}
+          onPress={() => pay("Mixed")}
+        >
+          <Text style={styles.text}>Mixed</Text>
+        </Pressable>
+
+      </View>
+
+    </SafeAreaView>
 
   );
 
@@ -89,21 +103,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
-    gap: 18,
     backgroundColor: "#f5f5f5",
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    gap: 16,
+  },
+
+  tabletContainer: {
+    width: 650,
+    alignSelf: "center",
   },
 
   button: {
-    paddingVertical: 18,
+    minHeight: 58,
     borderRadius: 14,
     alignItems: "center",
+    justifyContent: "center",
     elevation: 4,
   },
 
   text: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "700",
   },
 

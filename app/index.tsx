@@ -16,9 +16,17 @@ import {
 import { router, useFocusEffect } from "expo-router";
 
 import MenuCard from "../components/common/MenuCard";
+import Screen from "../components/common/Screen";
 
 import { BillService } from "../services/billService";
 import { SettingsService } from "../services/settingsService";
+import {
+  wp,
+  hp,
+  rf,
+  rr,
+  isTablet,
+} from "../utils/responsive";
 
 
 export default function Home() {
@@ -146,12 +154,12 @@ export default function Home() {
 
   return(
 
+<Screen>
+
 <ScrollView
-
 style={styles.container}
-
 showsVerticalScrollIndicator={false}
-
+contentContainerStyle={{ paddingBottom: 35 }}
 >
 
 
@@ -387,9 +395,10 @@ style={styles.billCard}
 ))
 }
 
-<View style={{height:25}}/>
+<View style={{ height: hp(25) }} />
 
 </ScrollView>
+</Screen>
 
 );
 
@@ -400,106 +409,108 @@ const styles = StyleSheet.create({
 container:{
 flex:1,
 backgroundColor:"#F4F6F9",
-padding:18
+padding:wp(18)
 },
 
 header:{
 flexDirection:"row",
 justifyContent:"space-between",
 alignItems:"flex-start",
-marginBottom:22
+marginBottom:hp(22)
 },
 
 hello:{
-fontSize:17,
+fontSize:rf(17),
 color:"#666"
 },
 
 store:{
-fontSize:30,
+fontSize:isTablet ? rf(36) : rf(30),
 fontWeight:"800",
 color:"#111",
-marginTop:2
+marginTop:hp(2),
+maxWidth:"85%"
 },
 
 greeting:{
-fontSize:16,
+fontSize:rf(16),
 color:"#666",
-marginTop:6
+marginTop:hp(6)
 },
 
 date:{
-fontSize:15,
+fontSize:rf(15),
 fontWeight:"600",
 color:"#777"
 },
 
 earningCard:{
 backgroundColor:"#111827",
-padding:22,
-borderRadius:18,
-marginBottom:18,
+padding:wp(22),
+borderRadius:rr(18),
+marginBottom:hp(18),
 elevation:4
 },
 
 earningTitle:{
-fontSize:16,
+fontSize:rf(16),
 color:"#E5E7EB"
 },
 
 earning:{
-fontSize:34,
+fontSize:isTablet ? rf(42) : rf(34),
 fontWeight:"800",
 color:"#fff",
-marginTop:8
+marginTop:hp(8)
 },
 
 row:{
 flexDirection:"row",
 justifyContent:"space-between",
-marginBottom:20
+marginBottom:hp(20)
 },
 
 smallCard:{
 backgroundColor:"#fff",
-width:"48%",
-padding:18,
-borderRadius:16,
-elevation:2
+width:isTablet ? "49%" : "48%",
+padding:wp(18),
+borderRadius:rr(16),
+elevation:2,
+minHeight:hp(120)
 },
 
 smallTitle:{
-fontSize:15,
+fontSize:rf(15),
 fontWeight:"700",
 color:"#555",
-marginBottom:10
+marginBottom:hp(10)
 },
 
 bigNumber:{
-fontSize:34,
+fontSize:isTablet ? rf(40) : rf(34),
 fontWeight:"800",
 color:"#111"
 },
 
 billNo:{
-fontSize:15,
+fontSize:rf(15),
 fontWeight:"600",
-marginBottom:4
+marginBottom:hp(4)
 },
 
 section:{
-fontSize:22,
+fontSize:isTablet ? rf(26) : rf(22),
 fontWeight:"800",
-marginTop:8,
-marginBottom:12,
+marginTop:hp(8),
+marginBottom:hp(12),
 color:"#111"
 },
 
 billCard:{
 backgroundColor:"#fff",
-padding:16,
-borderRadius:16,
-marginBottom:12,
+padding:wp(16),
+borderRadius:rr(16),
+marginBottom:hp(12),
 flexDirection:"row",
 justifyContent:"space-between",
 alignItems:"center",
@@ -507,33 +518,33 @@ elevation:2
 },
 
 billNumber:{
-fontSize:17,
+fontSize:rf(17),
 fontWeight:"700",
 color:"#111"
 },
 
 billMode:{
-marginTop:4,
-fontSize:14,
+marginTop:hp(4),
+fontSize:rf(14),
 color:"#777"
 },
 
 billAmount:{
-fontSize:18,
+fontSize:rf(18),
 fontWeight:"800",
 color:"#16A34A"
 },
 
 emptyCard:{
 backgroundColor:"#fff",
-padding:22,
-borderRadius:16,
+padding:wp(22),
+borderRadius:rr(16),
 alignItems:"center",
 elevation:2
 },
 
 emptyText:{
-fontSize:16,
+fontSize:rf(16),
 color:"#777"
 }
 

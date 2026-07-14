@@ -6,10 +6,13 @@ import {
   Button,
   StyleSheet,
   Alert,
-} from "react-native";import * as ImagePicker from "expo-image-picker";
-import { Image, TouchableOpacity, Text } from "react-native";
-
-
+  Image,
+  TouchableOpacity,
+  Text,
+  useWindowDimensions,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import * as ImagePicker from "expo-image-picker";
 
 import { ProductService } from "../../services/productService";
 
@@ -21,6 +24,9 @@ export default function EditProduct() {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [image, setImage] = useState("");
+
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
 
   useEffect(() => {
     if (!id) return;
@@ -41,30 +47,28 @@ export default function EditProduct() {
   }, []);
 
   async function pickImage() {
+    const permission =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  const permission =
-    await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert(
+        "Permission Required",
+        "Please allow gallery access."
+      );
+      return;
+    }
 
-  if (!permission.granted) return;
+    const result =
+      await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        quality: 0.7,
+      });
 
-  const result =
-    await ImagePicker.launchImageLibraryAsync({
-
-      mediaTypes: ["images"],
-
-      allowsEditing: true,
-
-      quality: 0.7,
-
-    });
-
-  if (!result.canceled) {
-
-    setImage(result.assets[0].uri);
-
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
   }
-
-}
 
   const save = () => {
     ProductService.update(Number(id), {
@@ -77,99 +81,127 @@ export default function EditProduct() {
       favorite: 0,
     });
 
-    Alert.alert("Updated Successfully");
+    Alert.alert("Success", "Product Updated Successfully");
     router.back();
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Product Name"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
-
-      <TextInput
-        placeholder="Category"
-        value={category}
-        onChangeText={setCategory}
-        style={styles.input}
-      />
-
-      <TextInput
-        placeholder="Price"
-        keyboardType="numeric"
-        value={price}
-        onChangeText={setPrice}
-        style={styles.input}
-      />
-
-      <TextInput
-        placeholder="Stock"
-        keyboardType="numeric"
-        value={stock}
-        onChangeText={setStock}
-        style={styles.input}
-      />
-      <TouchableOpacity
-      style={styles.imageButton}
-      onPress={pickImage}
+    <SafeAreaView
+      style={{ flex: 1 }}
+      edges={["top", "bottom"]}
+    >
+      <View
+        style={[
+          styles.container,
+          isTablet && styles.tabletContainer,
+        ]}
       >
+        <TextInput
+          placeholder="Product Name"
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
+        />
 
-      <Text style={{color:"#fff"}}>
-      Change Image
-      </Text>
+        <TextInput
+          placeholder="Category"
+          value={category}
+          onChangeText={setCategory}
+          style={styles.input}
+        />
 
-      </TouchableOpacity>
+        <TextInput
+          placeholder="Price"
+          keyboardType="numeric"
+          value={price}
+          onChangeText={setPrice}
+          style={styles.input}
+        />
 
-      {
-      image!=="" && (
+        <TextInput
+          placeholder="Stock"
+          keyboardType="numeric"
+          value={stock}
+          onChangeText={setStock}
+          style={styles.input}
+        />
 
-      <Image
+        <TouchableOpacity
+          style={styles.imageButton}
+          onPress={pickImage}
+        >
+          <Text style={styles.imageButtonText}>
+            Change Image
+          </Text>
+        </TouchableOpacity>
 
-      source={{uri:image}}
+        {image !== "" && (
+          <Image
+            source={{ uri: image }}
+            style={[
+              styles.image,
+              {
+                width: isTablet ? 220 : 140,
+                height: isTablet ? 220 : 140,
+              },
+            ]}
+          />
+        )}
 
-      style={styles.image}
-
-      />
-
-      )
-      }
-
-      <Button title="Update Product" onPress={save} />
-    </View>
+        <View style={{ marginTop: 10 }}>
+          <Button
+            title="Update Product"
+            onPress={save}
+          />
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#fff",
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
+
+  tabletContainer: {
+    maxWidth: 700,
+    width: "100%",
+    alignSelf: "center",
   },
 
   input: {
     borderWidth: 1,
     borderColor: "#ddd",
-    marginBottom: 15,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    height: 56,
+    marginBottom: 16,
+    fontSize: 16,
+    backgroundColor: "#fff",
   },
 
-  imageButton:{
-  backgroundColor:"#111",
-  padding:14,
-  borderRadius:10,
-  alignItems:"center",
-  marginBottom:15
+  imageButton: {
+    backgroundColor: "#111",
+    height: 56,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 18,
   },
 
-  image:{
-  width:140,
-  height:140,
-  borderRadius:12,
-  alignSelf:"center",
-  marginBottom:20
-},
+  imageButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  image: {
+    borderRadius: 14,
+    alignSelf: "center",
+    marginBottom: 24,
+  },
 });

@@ -1,5 +1,18 @@
-import { Pressable, Text, StyleSheet } from "react-native";
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+} from "react-native";
+
 import Colors from "../../constants/colors";
+
+import {
+  wp,
+  hp,
+  rf,
+  rr,
+  isTablet,
+} from "../../utils/responsive";
 
 interface Props {
   title: string;
@@ -18,19 +31,23 @@ export default function MenuCard({
 }
 
 const styles = StyleSheet.create({
+
   card: {
     flex: 1,
-    height: 120,
+    height: isTablet ? hp(150) : hp(120),
     backgroundColor: Colors.white,
-    borderRadius: 18,
+    borderRadius: rr(18),
     justifyContent: "center",
     alignItems: "center",
     elevation: 2,
-    margin: 6,
+    margin: wp(6),
+    paddingHorizontal: wp(12),
   },
 
   title: {
     fontWeight: "600",
-    fontSize: 17,
+    fontSize: isTablet ? rf(20) : rf(17),
+    textAlign: "center",
   },
+
 });

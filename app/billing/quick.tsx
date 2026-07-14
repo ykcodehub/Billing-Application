@@ -6,154 +6,239 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  useWindowDimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+
 import { BillService } from "../../services/billService";
 import { PrintService } from "../../services/printService";
 
 export default function QuickBilling() {
+
   const [amount, setAmount] = useState("");
   const [paymentMode, setPaymentMode] = useState("Cash");
 
+  const { width } = useWindowDimensions();
+
+  const isTablet = width >= 768;
+
   async function generateBill() {
 
-  if (!amount || Number(amount) <= 0) {
-    Alert.alert("Enter valid amount");
-    return;
-  }
+    if (!amount || Number(amount) <= 0) {
+      Alert.alert("Enter valid amount");
+      return;
+    }
 
-  const billNo = BillService.save(
-    [],
-    Number(amount),
-    paymentMode,
-    "QUICK"
-  );
-
-  // Latest bill nikalo
-  const bills = BillService.getBills() as any[];
-
-  if (bills.length > 0) {
-
-    await PrintService.printReceipt(
-      bills[0],
-      []
+    const billNo = BillService.save(
+      [],
+      Number(amount),
+      paymentMode,
+      "QUICK"
     );
 
+    try {
+
+      const bills = BillService.getBills() as any[];
+
+      if (bills.length > 0) {
+
+        await PrintService.autoPrint(
+          bills[0],
+          []
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log("Auto Print Failed", error);
+
+    }
+
+    Alert.alert(
+      "Success",
+      `${billNo} Generated`
+    );
+
+    setAmount("");
+
+    router.back();
+
   }
 
-  Alert.alert(
-    "Success",
-    `${billNo} Generated`
-  );
-
-  setAmount("");
-
-  router.back();
-
-}
-
   return (
-    <View style={styles.container}>
 
-      <Text style={styles.heading}>
-        Quick Billing
-      </Text>
+    <SafeAreaView style={{ flex: 1 }}>
 
-      <TextInput
-        placeholder="Enter Amount"
-        keyboardType="numeric"
-        value={amount}
-        onChangeText={setAmount}
-        style={styles.input}
-      />
+      <View
+        style={[
+          styles.container,
+          isTablet && styles.tabletContainer,
+        ]}
+      >
 
-      <View style={styles.row}>
+        <Text
+          style={[
+            styles.heading,
+            isTablet && styles.headingTablet,
+          ]}
+        >
+          Quick Billing
+        </Text>
 
-        {["Cash","UPI","Card","Mixed"].map(mode => (
+        <TextInput
+          placeholder="Enter Amount"
+          keyboardType="numeric"
+          value={amount}
+          onChangeText={setAmount}
+          style={[
+            styles.input,
+            isTablet && styles.inputTablet,
+          ]}
+        />
 
-          <Pressable
-            key={mode}
-            style={[
-              styles.mode,
-              paymentMode===mode && styles.active
-            ]}
-            onPress={()=>setPaymentMode(mode)}
-          >
+        <View style={styles.row}>
 
-            <Text>{mode}</Text>
+          {["Cash", "UPI", "Card", "Mixed"].map((mode) => (
 
-          </Pressable>
+            <Pressable
+              key={mode}
+              style={[
+                styles.mode,
+                isTablet && styles.modeTablet,
+                paymentMode === mode && styles.active,
+              ]}
+              onPress={() => setPaymentMode(mode)}
+            >
 
-        ))}
+              <Text
+                style={[
+                  styles.modeText,
+                  paymentMode === mode && styles.activeText,
+                ]}
+              >
+                {mode}
+              </Text>
+
+            </Pressable>
+
+          ))}
+
+        </View>
+
+        <Pressable
+          style={[
+            styles.button,
+            isTablet && styles.buttonTablet,
+          ]}
+          onPress={generateBill}
+        >
+
+          <Text style={styles.buttonText}>
+            Generate Bill
+          </Text>
+
+        </Pressable>
 
       </View>
 
-      <Pressable
-        style={styles.button}
-        onPress={generateBill}
-      >
+    </SafeAreaView>
 
-        <Text style={styles.buttonText}>
-          Generate Bill
-        </Text>
-
-      </Pressable>
-
-    </View>
   );
+
 }
 
-const styles=StyleSheet.create({
+const styles = StyleSheet.create({
 
-container:{
-flex:1,
-padding:20,
-backgroundColor:"#fff"
-},
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
 
-heading:{
-fontSize:24,
-fontWeight:"700",
-marginBottom:25
-},
+  tabletContainer: {
+    maxWidth: 650,
+    width: "100%",
+    alignSelf: "center",
+  },
 
-input:{
-borderWidth:1,
-borderColor:"#ccc",
-padding:15,
-borderRadius:10,
-fontSize:20
-},
+  heading: {
+    fontSize: 26,
+    fontWeight: "800",
+    marginBottom: 25,
+    color: "#111",
+  },
 
-row:{
-flexDirection:"row",
-gap:10,
-marginTop:20,
-flexWrap:"wrap"
-},
+  headingTablet: {
+    fontSize: 32,
+  },
 
-mode:{
-padding:12,
-backgroundColor:"#eee",
-borderRadius:8
-},
+  input: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 20,
+    elevation: 2,
+  },
 
-active:{
-backgroundColor:"#cde7ff"
-},
+  inputTablet: {
+    padding: 20,
+    fontSize: 22,
+  },
 
-button:{
-marginTop:40,
-backgroundColor:"#111",
-padding:16,
-borderRadius:10
-},
+  row: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 22,
+  },
 
-buttonText:{
-color:"#fff",
-fontSize:18,
-fontWeight:"700",
-textAlign:"center"
-}
+  mode: {
+    backgroundColor: "#eee",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+
+  modeTablet: {
+    paddingVertical: 16,
+    paddingHorizontal: 26,
+  },
+
+  active: {
+    backgroundColor: "#19C37D",
+  },
+
+  modeText: {
+    color: "#111",
+    fontWeight: "600",
+  },
+
+  activeText: {
+    color: "#fff",
+    fontWeight: "700",
+  },
+
+  button: {
+    marginTop: 40,
+    backgroundColor: "#111",
+    minHeight: 58,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  buttonTablet: {
+    minHeight: 64,
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
 
 });

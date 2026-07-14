@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect,useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -8,417 +8,401 @@ import {
   ScrollView,
   View,
   Switch,
+  Image,
+  useWindowDimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 
 import { SettingsService } from "../../services/settingsService";
-import * as ImagePicker from "expo-image-picker";
-import { Image } from "react-native";
 
-export default function Settings() {
+export default function Settings(){
 
-  const [storeName, setStoreName] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [logo, setLogo] = useState("");
+const {width}=useWindowDimensions();
+const isTablet=width>=768;
 
-  const [printerName, setPrinterName] = useState("");
-  const [printerMac, setPrinterMac] = useState("");
+const [storeName,setStoreName]=useState("");
+const [address,setAddress]=useState("");
+const [phone,setPhone]=useState("");
+const [logo,setLogo]=useState("");
 
-  const [autoPrint, setAutoPrint] = useState(true);
-  const [theme, setTheme] =  useState<"Light" | "Dark">("Light");
+const [printerName,setPrinterName]=useState("");
+const [printerMac,setPrinterMac]=useState("");
 
-  useEffect(() => {
+const [autoPrint,setAutoPrint]=useState(true);
 
-    const data: any = SettingsService.get();
+useEffect(()=>{
 
-    if (!data) return;
+const data:any=SettingsService.get();
 
-    setStoreName(data.storeName ?? "");
-    setAddress(data.address ?? "");
-    setPhone(data.phone ?? "");
-    setLogo(data.logo ?? "");
-    setPrinterName(data.printerName ?? "");
-    setPrinterMac(data.printerMac ?? "");
-    setAutoPrint(Boolean(data.autoPrint));
-    setTheme(data.theme || "Light");
+if(!data)return;
 
-  }, []);
+setStoreName(data.storeName??"");
+setAddress(data.address??"");
+setPhone(data.phone??"");
+setLogo(data.logo??"");
 
-  async function pickLogo() {
+setPrinterName(data.printerName??"");
+setPrinterMac(data.printerMac??"");
 
-  const permission =
-    await ImagePicker.requestMediaLibraryPermissionsAsync();
+setAutoPrint(Boolean(data.autoPrint));
 
-  if (!permission.granted) {
+},[]);
 
-    Alert.alert(
-      "Permission Required",
-      "Gallery permission is required."
-    );
+async function pickLogo(){
 
-    return;
+const permission=
+await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  }
+if(!permission.granted){
 
-  const result =
-    await ImagePicker.launchImageLibraryAsync({
+Alert.alert(
+"Permission Required",
+"Gallery permission is required."
+);
 
-      mediaTypes: ["images"],
-
-      allowsEditing: true,
-
-      aspect: [1, 1],
-
-      quality: 1,
-
-    });
-
-  if (!result.canceled) {
-
-    setLogo(
-      result.assets[0].uri
-    );
-
-  }
+return;
 
 }
-  function save() {
 
-    SettingsService.save({
+const result=
+await ImagePicker.launchImageLibraryAsync({
 
-    storeName,
-    address,
-    phone,
+mediaTypes:["images"],
 
-    logo,
+allowsEditing:true,
 
-    printerName,
-    printerMac,
+aspect:[1,1],
 
-    autoPrint: autoPrint ? 1 : 0,
+quality:1,
 
-    theme,
+});
 
-  });
+if(!result.canceled){
 
-    Alert.alert(
-      "Success",
-      "Settings Saved Successfully"
-    );
+setLogo(result.assets[0].uri);
 
-  }
+}
 
-  return (
+}
 
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
+function save(){
 
-      <Text style={styles.title}>
-        Store Settings
-      </Text>
+SettingsService.save({
 
-      <Text style={styles.heading}>
-        Store Information
-      </Text>
+storeName,
+address,
+phone,
 
-      <TextInput
-        placeholder="Store Name"
-        value={storeName}
-        onChangeText={setStoreName}
-        style={styles.input}
-      />
+logo,
 
-      <TextInput
-        placeholder="Store Address"
-        value={address}
-        onChangeText={setAddress}
-        multiline
-        style={[styles.input, { height: 90 }]}
-      />
+printerName,
+printerMac,
 
-      <TextInput
-        placeholder="Phone Number"
-        value={phone}
-        keyboardType="phone-pad"
-        onChangeText={setPhone}
-        style={styles.input}
-      />
+autoPrint:autoPrint?1:0,
 
-      <Text style={styles.heading}>
-  Store Logo
+theme:"Light",
+
+});
+
+Alert.alert(
+"Success",
+"Settings Saved Successfully"
+);
+
+}
+
+return(
+
+<SafeAreaView style={{flex:1}}>
+
+<ScrollView
+style={[
+styles.container,
+isTablet&&styles.tabletContainer
+]}
+showsVerticalScrollIndicator={false}
+contentContainerStyle={{paddingBottom:35}}
+>
+
+<Text style={styles.title}>
+Store Settings
+</Text>
+
+<Text style={styles.heading}>
+Store Information
+</Text>
+
+<TextInput
+placeholder="Store Name"
+value={storeName}
+onChangeText={setStoreName}
+style={styles.input}
+/>
+
+<TextInput
+placeholder="Store Address"
+value={address}
+onChangeText={setAddress}
+multiline
+style={[styles.input,{height:90}]}
+/>
+
+<TextInput
+placeholder="Phone Number"
+keyboardType="phone-pad"
+value={phone}
+onChangeText={setPhone}
+style={styles.input}
+/>
+
+<Text style={styles.heading}>
+Store Logo
 </Text>
 
 <Pressable
-  style={styles.option}
-  onPress={pickLogo}
+style={styles.option}
+onPress={pickLogo}
 >
 
-  {
-    logo ?
+{
+logo?
 
-    <Image
-      source={{ uri: logo }}
-      style={{
-        width:80,
-        height:80,
-        borderRadius:10,
-        alignSelf:"center",
-        marginBottom:10,
-      }}
-    />
+<Image
+source={{uri:logo}}
+style={[
+styles.logo,
+{
+width:isTablet?130:80,
+height:isTablet?130:80,
+}
+]}
+/>
 
-    :
+:
 
-    <View
-      style={{
-        width:80,
-        height:80,
-        borderRadius:10,
-        backgroundColor:"#ddd",
-        alignSelf:"center",
-        justifyContent:"center",
-        alignItems:"center",
-        marginBottom:10,
-      }}
-    >
+<View
+style={[
+styles.logoPlaceholder,
+{
+width:isTablet?130:80,
+height:isTablet?130:80,
+}
+]}
+>
 
-      <Text>Logo</Text>
+<Text>
+Logo
+</Text>
 
-    </View>
+</View>
 
-  }
+}
 
-  <Text
-    style={styles.optionTitle}
-  >
-    {logo ? "Change Logo" : "Upload Logo"}
-  </Text>
+<Text style={styles.optionTitle}>
+{logo?"Change Logo":"Upload Logo"}
+</Text>
 
 </Pressable>
 
-      <Text style={styles.heading}>
-        Printer
-      </Text>
+<Text style={styles.heading}>
+Printer
+</Text>
 
-      <Pressable
-        style={styles.option}
-        onPress={() => router.push("/settings/printer")}
-      >
-        <Text style={styles.optionTitle}>
-          Bluetooth Printer
-        </Text>
+<Pressable
+style={styles.option}
+onPress={()=>router.push("/settings/printer")}
+>
 
-        <Text style={styles.optionSub}>
-          {printerName || "Not Connected"}
-        </Text>
-      </Pressable>
+<Text style={styles.optionTitle}>
+Bluetooth Printer
+</Text>
 
-      <Text style={styles.heading}>
-  Printing
+<Text style={styles.optionSub}>
+{printerName||"Not Connected"}
+</Text>
+
+</Pressable>
+
+<Text style={styles.heading}>
+Printing
 </Text>
 
 <View style={styles.option}>
 
-  <View
-    style={{
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    }}
-  >
-    <View>
-      <Text style={styles.optionTitle}>
-        Auto Print Bill
-      </Text>
+<View
+style={{
+flexDirection:"row",
+justifyContent:"space-between",
+alignItems:"center",
+}}
+>
 
-      <Text style={styles.optionSub}>
-        Print receipt automatically after checkout
-      </Text>
-    </View>
+<View style={{flex:1}}>
 
-    <Switch
-      value={autoPrint}
-      onValueChange={setAutoPrint}
-    />
-  </View>
+<Text style={styles.optionTitle}>
+Auto Print Bill
+</Text>
+
+<Text style={styles.optionSub}>
+Print receipt automatically after checkout
+</Text>
+
+</View>
+
+<Switch
+value={autoPrint}
+onValueChange={setAutoPrint}
+/>
+
+</View>
 
 </View>
 
 <Text style={styles.heading}>
-  Appearance
+Appearance
 </Text>
 
 <View style={styles.option}>
 
-  <Text style={styles.optionTitle}>
-    Theme
-  </Text>
+<Text style={styles.optionTitle}>
+Theme
+</Text>
 
-  <View
-    style={{
-      flexDirection: "row",
-      marginTop: 15,
-    }}
-  >
-
-    <Pressable
-      style={[
-        styles.themeButton,
-        theme === "Light" &&
-          styles.themeSelected,
-      ]}
-      onPress={() => setTheme("Light")}
-    >
-      <Text
-        style={{
-          color:
-            theme === "Light"
-              ? "#fff"
-              : "#111",
-          fontWeight: "700",
-        }}
-      >
-        Light
-      </Text>
-    </Pressable>
-
-    <Pressable
-      style={[
-        styles.themeButton,
-        theme === "Dark" &&
-          styles.themeSelected,
-      ]}
-      onPress={() => setTheme("Dark")}
-    >
-      <Text
-        style={{
-          color:
-            theme === "Dark"
-              ? "#fff"
-              : "#111",
-          fontWeight: "700",
-        }}
-      >
-        Dark
-      </Text>
-    </Pressable>
-
-  </View>
+<Text style={styles.optionSub}>
+Coming Soon 🚀
+</Text>
 
 </View>
 
-      <Text style={styles.heading}>
-        About
-      </Text>
+<Text style={styles.heading}>
+About
+</Text>
 
-      <Pressable
-        style={styles.option}
-        onPress={() => router.push("/settings/about")}
-      >
-        <Text style={styles.optionTitle}>
-          About App
-        </Text>
+<Pressable
+style={styles.option}
+onPress={()=>router.push("/settings/about")}
+>
 
-        <Text style={styles.optionSub}>
-          Version • Privacy Policy • Terms
-        </Text>
-      </Pressable>
+<Text style={styles.optionTitle}>
+About App
+</Text>
 
-      <Pressable
-        style={styles.saveButton}
-        onPress={save}
-      >
-        <Text style={styles.saveText}>
-          Save Settings
-        </Text>
-      </Pressable>
+<Text style={styles.optionSub}>
+Version • Privacy Policy • Terms
+</Text>
 
-    </ScrollView>
+</Pressable>
 
-  );
+<Pressable
+style={styles.saveButton}
+onPress={save}
+>
+
+<Text style={styles.saveText}>
+Save Settings
+</Text>
+
+</Pressable>
+
+</ScrollView>
+
+</SafeAreaView>
+
+);
 
 }
-
 const styles = StyleSheet.create({
 
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-  },
-
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    marginBottom: 25,
-  },
-
-  heading: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 10,
-    marginTop: 15,
-    color: "#333",
-  },
-
-  input: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
-    fontSize: 16,
-    elevation: 2,
-  },
-
-  option: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    elevation: 2,
-  },
-
-  optionTitle: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#111",
-  },
-
-  optionSub: {
-    marginTop: 4,
-    fontSize: 14,
-    color: "#777",
-  },
-
-  saveButton: {
-    backgroundColor: "#19C37D",
-    padding: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 30,
-    marginBottom: 30,
-  },
-
-  saveText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "700",
-  },
-
-  themeButton: {
-  flex: 1,
-  backgroundColor: "#eee",
-  paddingVertical: 12,
-  borderRadius: 10,
-  alignItems: "center",
-  marginHorizontal: 5,
+container:{
+flex:1,
+backgroundColor:"#f5f5f5",
+paddingHorizontal:18,
+paddingTop:10,
 },
 
-themeSelected: {
-  backgroundColor: "#19C37D",
+tabletContainer:{
+width:"70%",
+alignSelf:"center",
+},
+
+title:{
+fontSize:30,
+fontWeight:"800",
+marginBottom:24,
+color:"#111",
+},
+
+heading:{
+fontSize:19,
+fontWeight:"700",
+marginTop:18,
+marginBottom:10,
+color:"#333",
+},
+
+input:{
+backgroundColor:"#fff",
+paddingHorizontal:16,
+paddingVertical:16,
+borderRadius:14,
+marginBottom:15,
+fontSize:16,
+elevation:2,
+},
+
+option:{
+backgroundColor:"#fff",
+padding:18,
+borderRadius:14,
+marginBottom:14,
+elevation:2,
+},
+
+optionTitle:{
+fontSize:17,
+fontWeight:"700",
+color:"#111",
+textAlign:"center",
+},
+
+optionSub:{
+marginTop:6,
+fontSize:14,
+color:"#777",
+textAlign:"center",
+},
+
+logo:{
+borderRadius:14,
+alignSelf:"center",
+marginBottom:14,
+},
+
+logoPlaceholder:{
+borderRadius:14,
+backgroundColor:"#ddd",
+justifyContent:"center",
+alignItems:"center",
+alignSelf:"center",
+marginBottom:14,
+},
+
+saveButton:{
+backgroundColor:"#19C37D",
+paddingVertical:18,
+borderRadius:14,
+alignItems:"center",
+marginTop:25,
+marginBottom:35,
+elevation:3,
+},
+
+saveText:{
+color:"#fff",
+fontSize:18,
+fontWeight:"700",
 },
 
 });

@@ -1,5 +1,19 @@
-import { Pressable, View, Text, StyleSheet } from "react-native";
+import {
+  Pressable,
+  View,
+  Text,
+  StyleSheet,
+} from "react-native";
+
 import Colors from "../../constants/colors";
+
+import {
+  wp,
+  hp,
+  rf,
+  rr,
+  isTablet,
+} from "../../utils/responsive";
 
 export default function IconMenuCard({
   title,
@@ -19,28 +33,30 @@ export default function IconMenuCard({
 }
 
 const styles = StyleSheet.create({
+
   card: {
     flex: 1,
     backgroundColor: "#fff",
-    borderRadius: 18,
-    padding: 18,
-    margin: 8,
+    borderRadius: rr(18),
+    padding: wp(18),
+    margin: wp(8),
     elevation: 2,
     justifyContent: "space-between",
-    height: 150,
+    height: isTablet ? hp(190) : hp(150),
   },
 
   iconBox: {
-    width: 52,
-    height: 52,
-    borderRadius: 12,
+    width: isTablet ? wp(60) : wp(52),
+    height: isTablet ? wp(60) : wp(52),
+    borderRadius: rr(12),
     justifyContent: "center",
     alignItems: "center",
   },
 
   title: {
-    fontSize: 20,
+    fontSize: isTablet ? rf(24) : rf(20),
     fontWeight: "700",
     color: Colors.text,
   },
+
 });

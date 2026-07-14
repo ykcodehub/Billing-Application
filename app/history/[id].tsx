@@ -1,15 +1,19 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, View, StyleSheet } from "react-native";
-import { Pressable } from "react-native";
-// import { ReceiptHtml } from "../../components/receipt/ReceiptHtml";
-// import { PdfService } from "../../services/pdfService";
+import {
+  ScrollView,
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  Alert,
+  useWindowDimensions,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BillService } from "../../services/billService";
 import { SettingsService } from "../../services/settingsService";
 import Receipt from "../../components/receipt/Receipt";
 import { PrintService } from "../../services/printService";
-import { Alert } from "react-native";
-
 
 export default function BillDetails() {
 
@@ -19,98 +23,150 @@ export default function BillDetails() {
   const items = BillService.getBillItems(Number(id)) as any[];
   const store = SettingsService.get();
 
+  const { width } = useWindowDimensions();
+
+  const isTablet = width >= 768;
+
   if (!bill) {
+
     return (
-      <View style={styles.center}>
-        <Text>Bill Not Found</Text>
-      </View>
+
+      <SafeAreaView style={{ flex: 1 }}>
+
+        <View style={styles.center}>
+          <Text>Bill Not Found</Text>
+        </View>
+
+      </SafeAreaView>
+
     );
+
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 30 }}
-    >
-      <Text style={styles.heading}>
-        Receipt Preview
-      </Text>
 
-      <Receipt
-        store={store}
-        bill={bill}
-        items={items}
-      />
-      <Pressable
-  style={styles.pdf}
-  onPress={async () => {
+    <SafeAreaView style={{ flex: 1 }}>
 
-    try {
+      <ScrollView
+        style={[
+          styles.container,
+          isTablet && styles.tabletContainer,
+        ]}
+        contentContainerStyle={{ paddingBottom: 30 }}
+        showsVerticalScrollIndicator={false}
+      >
 
-      await PrintService.printReceipt(
-        bill,
-        items
-      );
+        <Text
+          style={[
+            styles.heading,
+            isTablet && styles.headingTablet,
+          ]}
+        >
+          Receipt Preview
+        </Text>
 
-      Alert.alert(
-        "Success",
-        "Print command sent."
-      );
+        <Receipt
+          store={store}
+          bill={bill}
+          items={items}
+        />
 
-    } catch (e: any) {
+        <Pressable
+          style={[
+            styles.pdf,
+            isTablet && styles.pdfTablet,
+          ]}
+          onPress={async () => {
 
-      Alert.alert(
-        "Print Failed",
-        e.message
-      );
+            try {
 
-    }
+              await PrintService.printReceipt(
+                bill,
+                items
+              );
 
-  }}
->
+              Alert.alert(
+                "Success",
+                "Print command sent."
+              );
 
-  <Text style={styles.pdfText}>
-    Print Bill
-  </Text>
+            } catch (e: any) {
 
-</Pressable>
+              Alert.alert(
+                "Print Failed",
+                e.message
+              );
 
+            }
 
-    </ScrollView>
+          }}
+        >
+
+          <Text style={styles.pdfText}>
+            Print Bill
+          </Text>
+
+        </Pressable>
+
+      </ScrollView>
+
+    </SafeAreaView>
+
   );
+
 }
 
 const styles = StyleSheet.create({
 
-  container:{
-    flex:1,
-    backgroundColor:"#f5f5f5",
-    padding:15
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 16,
   },
 
-  heading:{
-    fontSize:24,
-    fontWeight:"700",
-    marginBottom:20
+  tabletContainer: {
+    maxWidth: 850,
+    width: "100%",
+    alignSelf: "center",
   },
 
-  center:{
-    flex:1,
-    justifyContent:"center",
-    alignItems:"center"
+  heading: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 20,
+    color: "#111",
   },
-  pdf:{
-    marginTop:20,
-    backgroundColor:"#111",
-    padding:15,
-    borderRadius:12,
-    alignItems:"center"
-    },
 
-    pdfText:{
-    color:"#fff",
-    fontWeight:"700",
-    fontSize:17
-    },
+  headingTablet: {
+    fontSize: 30,
+  },
+
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+
+  pdf: {
+    marginTop: 20,
+    backgroundColor: "#111",
+    minHeight: 58,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  pdfTablet: {
+    minHeight: 64,
+  },
+
+  pdfText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 18,
+  },
 
 });
