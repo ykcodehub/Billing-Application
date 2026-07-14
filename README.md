@@ -133,9 +133,12 @@ BillingApp/
 ├── app/
 ├── assets/
 ├── components/
+├── constants/
 ├── database/
+├── hooks/
 ├── services/
-├── screenshots/
+├── types/
+├── utils/
 ├── package.json
 └── README.md
 ```
