@@ -20,6 +20,23 @@ A modern offline-first Billing & POS application built using **React Native**, *
 
 ---
 
+## 📱 Download Android APK
+
+You can download and install the latest Android APK directly from this repository.
+
+👉 **Download APK:** [BillingApp.apk](apk/BillingApp.apk)
+
+### Installation
+
+1. Download the APK.
+2. Enable **Install from Unknown Sources** if prompted.
+3. Install the APK.
+4. Open the app and start using it.
+
+> **Note:** This application is currently available only for Android.
+
+---
+
 ## 📱 Screenshots
 
 <table>
