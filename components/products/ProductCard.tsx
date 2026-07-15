@@ -7,17 +7,19 @@ import {
   Image,
   useWindowDimensions,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProductCard({
   item,
   onPress,
   onDelete,
 }: any) {
+
   const { width } = useWindowDimensions();
+
   const isTablet = width >= 768;
 
   const confirmDelete = () => {
+
     Alert.alert(
       "Delete Product",
       `Delete "${item.name}" ?`,
@@ -33,123 +35,152 @@ export default function ProductCard({
         },
       ]
     );
+
   };
 
   return (
-    <SafeAreaView edges={["left", "right"]}>
-      <Pressable
-        style={[
-          styles.card,
-          isTablet && styles.cardTablet,
-        ]}
-        onPress={onPress}
-        onLongPress={confirmDelete}
-      >
-        <View style={styles.row}>
-          {item.image !== "" && (
-            <Image
-              source={{ uri: item.image }}
-              style={[
-                styles.image,
-                isTablet && styles.imageTablet,
-              ]}
-            />
-          )}
 
-          <View style={styles.content}>
-            <Text
-              style={[
-                styles.name,
-                isTablet && styles.nameTablet,
-              ]}
-            >
-              {item.name}
+    <Pressable
+      style={[
+        styles.card,
+        isTablet && styles.cardTablet,
+      ]}
+      onPress={onPress}
+      onLongPress={confirmDelete}
+    >
+
+      {
+
+        item.image ? (
+
+          <Image
+            source={{ uri: item.image }}
+            style={styles.image}
+          />
+
+        ) : (
+
+          <View
+            style={[
+              styles.image,
+              styles.placeholder,
+            ]}
+          >
+
+            <Text style={styles.placeholderIcon}>
+              📦
             </Text>
 
-            <Text
-              style={[
-                styles.price,
-                isTablet && styles.priceTablet,
-              ]}
-            >
-              ₹ {item.price}
-            </Text>
-
-            <Text
-              style={[
-                styles.stock,
-                isTablet && styles.stockTablet,
-              ]}
-            >
-              Stock : {item.stock}
-            </Text>
           </View>
-        </View>
-      </Pressable>
-    </SafeAreaView>
+
+        )
+
+      }
+
+      {
+
+        item.category ? (
+
+          <View style={styles.categoryChip}>
+
+            <Text style={styles.categoryText}>
+              {item.category}
+            </Text>
+
+          </View>
+
+        ) : null
+
+      }
+
+      <Text
+        numberOfLines={2}
+        style={styles.name}
+      >
+        {item.name}
+      </Text>
+
+      <Text style={styles.price}>
+        ₹ {item.price}
+      </Text>
+
+      <Text style={styles.stock}>
+        Stock : {item.stock}
+      </Text>
+
+    </Pressable>
+
   );
+
 }
 
 const styles = StyleSheet.create({
+
   card: {
+    flex: 1,
     backgroundColor: "#fff",
-    marginBottom: 12,
-    borderRadius: 14,
-    padding: 16,
-    elevation: 2,
+    borderRadius: 16,
+    margin: 5,
+    padding: 10,
+    elevation: 3,
   },
 
   cardTablet: {
-    padding: 22,
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
+    margin: 8,
+    padding: 14,
   },
 
   image: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-    marginRight: 15,
-  },
-
-  imageTablet: {
-    width: 80,
-    height: 80,
+    width: "100%",
+    height: 120,
     borderRadius: 12,
-    marginRight: 20,
+    backgroundColor: "#ECECEC",
   },
 
-  content: {
-    flex: 1,
+  placeholder: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 
-  name: {
-    fontSize: 18,
+  placeholderIcon: {
+    fontSize: 38,
+  },
+
+  categoryChip: {
+    alignSelf: "flex-start",
+    marginTop: 8,
+    backgroundColor: "#E8F5E9",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+
+  categoryText: {
+    color: "#19C37D",
+    fontSize: 11,
     fontWeight: "700",
   },
 
-  nameTablet: {
-    fontSize: 22,
+  name: {
+    marginTop: 8,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#111",
+    minHeight: 40,
   },
 
   price: {
-    fontSize: 16,
-    marginTop: 5,
-  },
-
-  priceTablet: {
-    fontSize: 19,
+    marginTop: 4,
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#19C37D",
   },
 
   stock: {
-    color: "#777",
     marginTop: 4,
+    fontSize: 12,
+    color: "#777",
+    fontWeight: "600",
   },
 
-  stockTablet: {
-    fontSize: 17,
-  },
 });
