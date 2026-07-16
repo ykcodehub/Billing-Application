@@ -1,168 +1,314 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+} from "react-native";
+
 export default function Receipt({
-
   store,
-
   bill,
+  items,
+}: any) {
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-  items
+  const totalQty = items.reduce(
+    (sum: number, item: any) => sum + item.qty,
+    0
+  );
 
-}:any){
+  return (
+    <View style={styles.paper}>
+      {!!store?.logo && (
+        <Image
+          source={{ uri: store.logo }}
+          style={styles.logo}
+        />
+      )}
 
-return(
+      <Text style={styles.store}>
+        {store?.storeName || "Billing Store"}
+      </Text>
 
-<View style={styles.paper}>
+      {!!store?.address && (
+        <Text style={styles.info}>
+          {store.address}
+        </Text>
+      )}
 
-{
-store?.logo ?
+      {!!store?.phone && (
+        <Text style={styles.info}>
+          {store.phone}
+        </Text>
+      )}
 
-<Image
-source={{ uri: store.logo }}
-style={styles.logo}
-/>
+      <View style={styles.line} />
 
-:null
+      <View style={styles.detailRow}>
+        <Text style={styles.label}>
+          Bill No
+        </Text>
+
+        <Text style={styles.value}>
+          {bill.billNo}
+        </Text>
+      </View>
+
+      <View style={styles.detailRow}>
+        <Text style={styles.label}>
+          Date
+        </Text>
+
+        <Text style={styles.value}>
+          {formatDate(bill.createdAt)}
+        </Text>
+      </View>
+
+      <View style={styles.line} />
+
+      <View style={styles.headerRow}>
+        <Text
+          style={[
+            styles.header,
+            { flex: 1.7 },
+          ]}
+        >
+          Item
+        </Text>
+
+        <Text
+          style={[
+            styles.header,
+            { flex: 0.6, textAlign: "center" },
+          ]}
+        >
+          Qty
+        </Text>
+
+        <Text
+          style={[
+            styles.header,
+            { flex: 0.9, textAlign: "right" },
+          ]}
+        >
+          Total
+        </Text>
+      </View>
+
+      {items.map((item: any) => (
+        <View
+          key={item.id}
+          style={styles.itemRow}
+        >
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.itemText,
+              { flex: 1.7 },
+            ]}
+          >
+            {item.name}
+          </Text>
+
+          <Text
+            style={[
+              styles.itemText,
+              {
+                flex: 0.6,
+                textAlign: "center",
+              },
+            ]}
+          >
+            {item.qty}
+          </Text>
+
+          <Text
+            style={[
+              styles.itemText,
+              {
+                flex: 0.9,
+                textAlign: "right",
+              },
+            ]}
+          >
+            Rs. {(item.qty * item.price).toFixed(2)}
+          </Text>
+        </View>
+      ))}
+
+      <View style={styles.line} />
+
+      <View style={styles.summaryRow}>
+        <Text style={styles.summaryLabel}>
+          Total Items
+        </Text>
+
+        <Text style={styles.summaryValue}>
+          {totalQty}
+        </Text>
+      </View>
+
+      <View style={styles.summaryRow}>
+        <Text style={styles.summaryLabel}>
+          Payment
+        </Text>
+
+        <Text style={styles.summaryValue}>
+          {bill.paymentMode}
+        </Text>
+      </View>
+
+      <View style={styles.summaryRow}>
+        <Text style={styles.totalLabel}>
+          GRAND TOTAL
+        </Text>
+
+        <Text style={styles.totalValue}>
+          Rs. {Number(bill.total).toFixed(2)}
+        </Text>
+      </View>
+
+      <View style={styles.line} />
+
+      <Text style={styles.footerTitle}>
+        THANK YOU
+      </Text>
+
+      <Text style={styles.footer}>
+        Visit Again
+      </Text>
+    </View>
+  );
 }
-<Text style={styles.store}>
-{store?.storeName || "Billing Store"}
-</Text>
 
-{
-store?.address?
-<Text style={styles.small}>
-{store.address}
-</Text>:null
-}
+const styles = StyleSheet.create({
+  paper: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 18,
+    margin: 10,
+    elevation: 2,
+  },
 
-{
-store?.phone?
-<Text style={styles.small}>
-{store.phone}
-</Text>:null
-}
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    alignSelf: "center",
+    marginBottom: 10,
+    resizeMode: "cover",
+  },
 
-<View style={styles.line}/>
+  store: {
+    textAlign: "center",
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#111",
+  },
 
-<Text style={styles.small}>
-Bill : {bill.billNo}
-</Text>
+  info: {
+    textAlign: "center",
+    fontSize: 13,
+    color: "#666",
+    marginTop: 2,
+  },
 
-<Text style={styles.small}>
-{new Date(bill.createdAt).toLocaleString()}
-</Text>
+  line: {
+    borderBottomWidth: 1,
+    borderStyle: "dashed",
+    borderColor: "#777",
+    marginVertical: 12,
+  },
 
-<View style={styles.line}/>
+  detailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 2,
+  },
 
-{
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+  },
 
-items.map((item:any)=>(
+  value: {
+    fontSize: 14,
+    color: "#222",
+  },
 
-<View
-key={item.id}
-style={styles.row}
->
+  headerRow: {
+    flexDirection: "row",
+    marginBottom: 8,
+  },
 
-<Text style={{flex:1}}>
-{item.name}
-</Text>
+  header: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#111",
+  },
 
-<Text>
-{item.qty}
-</Text>
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
 
-<Text>
-₹ {item.qty*item.price}
-</Text>
+  itemText: {
+    fontSize: 13,
+    color: "#222",
+  },
 
-</View>
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
 
-))
+  summaryLabel: {
+    fontSize: 14,
+    color: "#444",
+  },
 
-}
+  summaryValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#111",
+  },
 
-<View style={styles.line}/>
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111",
+  },
 
-<View style={styles.row}>
+  totalValue: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111",
+  },
 
-<Text style={styles.total}>
-TOTAL
-</Text>
+  footerTitle: {
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "700",
+    marginTop: 4,
+    color: "#111",
+  },
 
-<Text style={styles.total}>
-Rs {bill.total}
-</Text>
-
-</View>
-
-<Text style={styles.small}>
-Payment : {bill.paymentMode}
-</Text>
-
-<View style={styles.line}/>
-
-<Text style={styles.footer}>
-THANK YOU
-</Text>
-
-<Text style={styles.footer}>
-Visit Again
-</Text>
-
-</View>
-
-);
-
-}
-
-const styles=StyleSheet.create({
-
-paper:{
-backgroundColor:"#fff",
-padding:12,
-borderRadius:10
-},
-
-store:{
-fontSize:18,
-fontWeight:"700",
-textAlign:"center"
-},
-
-small:{
-fontSize:12,
-textAlign:"center",
-marginTop:2
-},
-
-line:{
-borderBottomWidth:1,
-borderStyle:"dashed",
-marginVertical:8
-},
-
-row:{
-flexDirection:"row",
-justifyContent:"space-between",
-marginBottom:4
-},
-
-total:{
-fontSize:16,
-fontWeight:"700"
-},
-
-footer:{
-textAlign:"center",
-marginTop:3,
-fontWeight:"600"
-},
-logo:{
-width:70,
-height:70,
-borderRadius:12,
-alignSelf:"center",
-marginBottom:10,
-resizeMode:"contain",
-},
-
+  footer: {
+    textAlign: "center",
+    fontSize: 15,
+    color: "#555",
+    marginTop: 4,
+  },
 });

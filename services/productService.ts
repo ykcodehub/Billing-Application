@@ -4,10 +4,12 @@ import { Product } from "../types/product";
 export const ProductService = {
 
   getAll(): Product[] {
-    return db.getAllSync<Product>(
-      "SELECT * FROM products ORDER BY id DESC"
-    );
-  },
+  return db.getAllSync<Product>(`
+    SELECT *
+    FROM products
+    ORDER BY name COLLATE NOCASE
+  `);
+},
 
   getById(id: number) {
     return db.getFirstSync<Product>(
@@ -77,24 +79,41 @@ count() {
   return result?.count ?? 0;
 },
 
-search(keyword:string){
+search(keyword: string) {
 
-return db.getAllSync(
+  const value = `%${keyword}%`;
 
-`
-SELECT *
-FROM products
-WHERE
-name LIKE ?
-OR category LIKE ?
-ORDER BY id DESC
-`,
-[
-`%${keyword}%`,
-`%${keyword}%`
-]
+  return db.getAllSync<Product>(`
+    SELECT *
+    FROM products
+    WHERE
+      name LIKE ?
+      OR category LIKE ?
+      OR CAST(price AS TEXT) LIKE ?
+      OR CAST(stock AS TEXT) LIKE ?
+    ORDER BY name COLLATE NOCASE
+  `,
+  [
+    value,
+    value,
+    value,
+    value,
+  ]);
 
-);
+},
+
+  getCategories() {
+
+  return db.getAllSync<{
+    category: string;
+  }>(`
+    SELECT DISTINCT category
+    FROM products
+    WHERE
+      category IS NOT NULL
+      AND TRIM(category) != ''
+    ORDER BY category COLLATE NOCASE
+  `);
 
 },
 
