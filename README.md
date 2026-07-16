@@ -1,10 +1,10 @@
-# 🧾 BillingApp
+# BillingApp
 
 A modern offline-first Billing & POS application built using **React Native**, **Expo**, **TypeScript**, and **SQLite**. The app allows users to manage products, generate bills, print receipts via Bluetooth thermal printers, and maintain billing history without requiring an internet connection.
 
 ---
 
-## ✨ Features
+## Features
 
 - 📦 Product Management
 - 🛒 Normal Billing
@@ -24,7 +24,7 @@ A modern offline-first Billing & POS application built using **React Native**, *
 
 You can download and install the latest Android APK directly from this repository.
 
-👉 **[Download APK](https://github.com/ykcodehub/Billing-Application/releases/download/v1.0.0/BillingApp.apk)**
+👉 **[Download APK](https://github.com/ykcodehub/Billing-Application/releases/download/v1.0.1/BillingApp.apk)**
 
 ### Installation
 
